@@ -9,6 +9,9 @@ include(FetchContent)
 
 # ========================= BEGIN DEPENDENCIES =========================
 
+# Find OpenGL and make it available to targets
+find_package(OpenGL REQUIRED)
+
 set(SDL_SHARED OFF)
 set(SDL_STATIC ON)
 set(SDL_TEST_LIBRARY OFF)
@@ -61,8 +64,19 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glm)
 
-# Find OpenGL and make it available to targets
-find_package(OpenGL REQUIRED)
+# Configure ASSIMP build options
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "Disable ASSIMP tests")
+set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "Disable ASSIMP tools")
+set(ASSIMP_INSTALL OFF CACHE BOOL "Disable ASSIMP install")
+set(ASSIMP_INSTALL_PDB OFF CACHE BOOL "Disable PDB install")
+set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "Disable ASSIMP samples")
+
+FetchContent_Declare(
+        assimp
+        GIT_REPOSITORY https://github.com/assimp/assimp.git
+        GIT_TAG v6.0.2
+)
+FetchContent_MakeAvailable(assimp)
 
 # ========================= END DEPENDENCIES   =========================
 
@@ -82,7 +96,7 @@ add_executable(Minecraft
         src/ShaderCache.h
 )
 
-target_link_libraries(Minecraft SDL3::SDL3 spdlog::spdlog OpenGL::GL)
+target_link_libraries(Minecraft SDL3::SDL3 spdlog::spdlog OpenGL::GL assimp)
 
 # Compile ImGui sources into the executable (includes SDL3 + OpenGL3 backends)
 target_sources(Minecraft PRIVATE
@@ -98,6 +112,8 @@ target_include_directories(Minecraft PRIVATE
     ${imgui_SOURCE_DIR}
     ${imgui_SOURCE_DIR}/backends
     ${glm_SOURCE_DIR}
+    ${assimp_SOURCE_DIR}/include
+    ${CMAKE_BINARY_DIR}/_deps/assimp-build/include
 )
 
 set_target_properties(Minecraft PROPERTIES
@@ -106,6 +122,3 @@ set_target_properties(Minecraft PROPERTIES
     CXX_EXTENSIONS OFF
 )
 
-
-# Link SDL3 to the executable
-target_link_libraries(Minecraft SDL3::SDL3)
