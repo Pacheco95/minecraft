@@ -51,6 +51,14 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(imgui)
 
+# GLM
+FetchContent_Declare(
+        glm
+        GIT_REPOSITORY https://github.com/g-truc/glm.git
+        GIT_TAG 1.0.3
+)
+FetchContent_MakeAvailable(glm)
+
 # Find OpenGL and make it available to targets
 find_package(OpenGL REQUIRED)
 
@@ -63,6 +71,8 @@ add_executable(Minecraft
         src/Engine.cpp
         src/Engine.h
         src/Window.h
+        src/Shader.cpp
+        src/Shader.h
 )
 
 target_link_libraries(Minecraft SDL3::SDL3 spdlog::spdlog OpenGL::GL)
@@ -80,6 +90,7 @@ target_sources(Minecraft PRIVATE
 target_include_directories(Minecraft PRIVATE
     ${imgui_SOURCE_DIR}
     ${imgui_SOURCE_DIR}/backends
+    ${glm_SOURCE_DIR}
 )
 
 set_target_properties(Minecraft PROPERTIES
