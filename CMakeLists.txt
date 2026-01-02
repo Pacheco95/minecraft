@@ -53,7 +53,8 @@ add_executable(Minecraft
         src/Constants.h
         src/Engine.cpp
         src/Engine.h
-        src/Window.h)
+        src/Window.h
+)
 
 target_link_libraries(Minecraft SDL3::SDL3 spdlog::spdlog OpenGL::GL)
 
