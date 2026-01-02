@@ -14,6 +14,8 @@ using namespace App;
 
 auto logger = spdlog::stdout_color_mt("bootstrap");
 
+Uint64 g_lastFrameTime = 0;
+
 constexpr Engine *asEngine(void *appstate) {
   auto *engine = static_cast<Engine *>(appstate);
   return engine;
@@ -43,6 +45,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
                                    Config::Window::HEIGHT,
                                    SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
+  g_lastFrameTime = SDL_GetPerformanceCounter();
+
   logger->info("SDL initialized successfully");
 
   return SDL_APP_CONTINUE;
@@ -57,7 +61,13 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 }
 
 SDL_AppResult SDL_AppIterate(void *appstate) {
+  const auto now = SDL_GetPerformanceCounter();
+  const double deltaTime = static_cast<double>(now - g_lastFrameTime) /
+                           static_cast<double>(SDL_GetPerformanceFrequency());
+  g_lastFrameTime = now;
+
   const Engine *engine = asEngine(appstate);
+  engine->processFrame(deltaTime);
   const auto &window = engine->getWindow();
 
   constexpr auto red = Config::Window::CLEAR_COLOR[0];
