@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 4.1.2)
 project(Minecraft)
+include_directories(include)
 
 # Include FetchContent module for downloading dependencies
 include(FetchContent)
@@ -20,6 +21,8 @@ set(SDL_SENSOR OFF)
 set(SDL_CAMERA OFF)
 set(SDL_RENDERER_VULKAN OFF)
 set(SDL_VULKAN OFF)
+set(SDL_OPENGL ON)
+set(SDL_RENDERER_OPENGL ON)
 
 # SDL3
 FetchContent_Declare(
@@ -39,15 +42,20 @@ FetchContent_Declare(
 set(SPDLOG_FMT_EXTERNAL OFF)
 FetchContent_MakeAvailable(SDL3 spdlog)
 
+# Find OpenGL and make it available to targets
+find_package(OpenGL REQUIRED)
+
 # ========================= END DEPENDENCIES   =========================
 
-add_executable(Minecraft src/main.cpp
+add_executable(Minecraft
+        src/glad.c
+        src/main.cpp
         src/Constants.h
         src/Engine.cpp
         src/Engine.h
         src/Window.h)
 
-target_link_libraries(Minecraft SDL3::SDL3 spdlog::spdlog)
+target_link_libraries(Minecraft SDL3::SDL3 spdlog::spdlog OpenGL::GL)
 
 set_target_properties(Minecraft PROPERTIES
     CXX_STANDARD 23
