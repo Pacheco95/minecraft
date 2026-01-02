@@ -71,6 +71,7 @@ add_executable(Minecraft
         src/Engine.cpp
         src/Engine.h
         src/Window.h
+        src/Window.cpp
         src/Shader.cpp
         src/Shader.h
 )
