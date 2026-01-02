@@ -29,7 +29,15 @@ FetchContent_Declare(
     FIND_PACKAGE_ARGS NAMES SDL3
 )
 
-FetchContent_MakeAvailable(SDL3)
+# spdlog
+FetchContent_Declare(
+    spdlog
+    GIT_REPOSITORY https://github.com/gabime/spdlog.git
+    GIT_TAG v1.16.0
+)
+
+set(SPDLOG_FMT_EXTERNAL OFF)
+FetchContent_MakeAvailable(SDL3 spdlog)
 
 # ========================= END DEPENDENCIES   =========================
 
@@ -38,6 +46,8 @@ add_executable(Minecraft src/main.cpp
         src/Engine.cpp
         src/Engine.h
         src/Window.h)
+
+target_link_libraries(Minecraft SDL3::SDL3 spdlog::spdlog)
 
 set_target_properties(Minecraft PROPERTIES
     CXX_STANDARD 23
