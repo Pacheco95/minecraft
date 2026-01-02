@@ -3,19 +3,13 @@ SHELL := /bin/bash
 .PHONY: $(MAKECMDGOALS)
 
 clean:
-	@rm -rf build cmake-build*
+	@rm -rf cmake-build*
 
 .ONESHELL:
 build:
-	mkdir -p build
-	pushd build
-	cmake .. -G Ninja
-	cmake --build .
-	popd
+	cmake -DCMAKE_BUILD_TYPE=Debug -G Ninja -S . -B ./cmake-build-debug
 
-rebuild: clean build
-
-run: build
+run:
 	@./build/Minecraft
 
 format:
