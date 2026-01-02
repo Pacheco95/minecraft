@@ -26,8 +26,8 @@ constexpr Window *asWindow(void *appstate) {
 
 double getDeltaTime() {
   const auto now = SDL_GetPerformanceCounter();
-  const double deltaTime = static_cast<double>(now - g_lastFrameTime) /
-                           static_cast<double>(SDL_GetPerformanceFrequency());
+  const double deltaTime =
+      static_cast<double>(now - g_lastFrameTime) / static_cast<double>(SDL_GetPerformanceFrequency());
   g_lastFrameTime = now;
   return deltaTime;
 }

@@ -47,20 +47,17 @@ inline SDL_AppResult Window::setup() {
   const float mainScale = SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay());
 
   constexpr SDL_WindowFlags windowFlags =
-      SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN |
-      SDL_WINDOW_HIGH_PIXEL_DENSITY;
+      SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY;
 
   const int width = static_cast<int>(Config::Window::WIDTH * mainScale);
   const int height = static_cast<int>(Config::Window::HEIGHT * mainScale);
 
-  if (!SDL_CreateWindowAndRenderer(Config::Window::TITLE, width, height,
-                                   windowFlags, &m_sdlWindow, &m_sdlRenderer)) {
+  if (!SDL_CreateWindowAndRenderer(Config::Window::TITLE, width, height, windowFlags, &m_sdlWindow, &m_sdlRenderer)) {
     SPDLOG_CRITICAL("Couldn't create window/renderer: {}", SDL_GetError());
     return SDL_APP_FAILURE;
   }
 
-  SDL_SetWindowPosition(m_sdlWindow, SDL_WINDOWPOS_CENTERED,
-                        SDL_WINDOWPOS_CENTERED);
+  SDL_SetWindowPosition(m_sdlWindow, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 
   m_glContext = SDL_GL_CreateContext(m_sdlWindow);
 
@@ -150,8 +147,7 @@ inline void Window::render() const {
   ImGui::Render();
   const ImGuiIO &io = ImGui::GetIO();
   (void)io;
-  glViewport(0, 0, static_cast<int>(io.DisplaySize.x),
-             static_cast<int>(io.DisplaySize.y));
+  glViewport(0, 0, static_cast<int>(io.DisplaySize.x), static_cast<int>(io.DisplaySize.y));
   glClearColor(red, green, blue, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
