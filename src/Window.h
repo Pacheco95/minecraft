@@ -20,7 +20,7 @@ struct Window {
   SDL_AppResult setup();
   SDL_AppResult processEvent(const SDL_Event *event);
   void dispose();
-  static void renderImGuiWindows();
+  static void createImGuiWindows();
   void render() const;
 
 private:
@@ -129,7 +129,7 @@ inline void Window::dispose() {
   ImGui_ImplSDL3_Shutdown();
   ImGui::DestroyContext();
 }
-inline void Window::renderImGuiWindows() {
+inline void Window::createImGuiWindows() {
   // Show the demo window
   static bool show_demo = true;
   ImGui::ShowDemoWindow(&show_demo);
@@ -142,23 +142,19 @@ inline void Window::renderImGuiWindows() {
 }
 
 inline void Window::render() const {
-  const float red = Config::Window::CLEAR_COLOR[0];
-  const float green = Config::Window::CLEAR_COLOR[1];
-  const float blue = Config::Window::CLEAR_COLOR[2];
-
-  // Start the Dear ImGui frame
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplSDL3_NewFrame();
   ImGui::NewFrame();
 
-  renderImGuiWindows();
+  createImGuiWindows();
 
   // Rendering
   ImGui::Render();
   const ImGuiIO &io = ImGui::GetIO();
-  (void)io;
   glViewport(0, 0, static_cast<int>(io.DisplaySize.x), static_cast<int>(io.DisplaySize.y));
-  glClearColor(red, green, blue, 1.0f);
+
+  const auto [r, g, b] = Config::Window::CLEAR_COLOR;
+  glClearColor(r, g, b, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
   SDL_GL_SwapWindow(m_sdlWindow);
