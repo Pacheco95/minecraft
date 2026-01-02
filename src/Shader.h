@@ -75,7 +75,7 @@ public:
   }
 
 private:
-  static void checkCompileErrors(const GLuint shader, const ShaderType type);
+  static void checkCompileErrors(GLuint shader, ShaderType type);
 
   static uint compile(const std::string &code, ShaderType type);
 };
