@@ -20,6 +20,7 @@ struct Window {
   SDL_AppResult setup();
   SDL_AppResult processEvent(const SDL_Event *event);
   void dispose();
+  static void renderImGuiWindows();
   void render() const;
 
 private:
@@ -128,20 +129,29 @@ inline void Window::dispose() {
   ImGui_ImplSDL3_Shutdown();
   ImGui::DestroyContext();
 }
+inline void Window::renderImGuiWindows() {
+  // Show the demo window
+  static bool show_demo = true;
+  ImGui::ShowDemoWindow(&show_demo);
+
+  ImGui::SetNextWindowSizeConstraints(ImVec2(250, 250), ImVec2(FLT_MAX, FLT_MAX));
+  ImGui::Begin("Engine Teaks", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+  ImGui::Text("FPS: %.2f", ImGui::GetIO().Framerate);
+  ImGui::ColorEdit3("Clear Color", Config::Window::CLEAR_COLOR, ImGuiColorEditFlags_Float);
+  ImGui::End();
+}
 
 inline void Window::render() const {
-  constexpr float red = Config::Window::CLEAR_COLOR[0];
-  constexpr float green = Config::Window::CLEAR_COLOR[1];
-  constexpr float blue = Config::Window::CLEAR_COLOR[2];
+  const float red = Config::Window::CLEAR_COLOR[0];
+  const float green = Config::Window::CLEAR_COLOR[1];
+  const float blue = Config::Window::CLEAR_COLOR[2];
 
   // Start the Dear ImGui frame
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplSDL3_NewFrame();
   ImGui::NewFrame();
 
-  // Show the demo window
-  static bool show_demo = true;
-  ImGui::ShowDemoWindow(&show_demo);
+  renderImGuiWindows();
 
   // Rendering
   ImGui::Render();
