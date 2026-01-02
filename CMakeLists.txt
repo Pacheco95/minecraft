@@ -34,7 +34,10 @@ FetchContent_MakeAvailable(SDL3)
 # ========================= END DEPENDENCIES   =========================
 
 add_executable(Minecraft src/main.cpp
-        src/Constants.h)
+        src/Constants.h
+        src/Engine.cpp
+        src/Engine.h
+        src/Window.h)
 
 set_target_properties(Minecraft PROPERTIES
     CXX_STANDARD 23
