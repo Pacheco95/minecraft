@@ -1,10 +1,15 @@
 #pragma once
 
-#include "Constants.h"
+#include <backends/imgui_impl_opengl3.h>
+#include <backends/imgui_impl_sdl3.h>
+#include <imgui.h>
+
 #include <SDL3/SDL.h>
 #include <glad/glad.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
+
+#include "Config.h"
 
 namespace App {
 struct Window {
@@ -19,6 +24,8 @@ struct Window {
 
 private:
   std::shared_ptr<spdlog::logger> logger = spdlog::stdout_color_mt("bootstrap");
+
+  void setupImgui() const;
 };
 
 inline SDL_AppResult Window::setup() {
@@ -35,11 +42,19 @@ inline SDL_AppResult Window::setup() {
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
-  if (!SDL_CreateWindowAndRenderer("Minecraft", Config::Window::WIDTH,
-                                   Config::Window::HEIGHT,
-                                   SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE,
-                                   &m_sdlWindow, &m_sdlRenderer)) {
+  const float mainScale = SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay());
+
+  constexpr SDL_WindowFlags windowFlags =
+      SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN |
+      SDL_WINDOW_HIGH_PIXEL_DENSITY;
+
+  const int width = static_cast<int>(Config::Window::WIDTH * mainScale);
+  const int height = static_cast<int>(Config::Window::HEIGHT * mainScale);
+
+  if (!SDL_CreateWindowAndRenderer(Config::Window::TITLE, width, height,
+                                   windowFlags, &m_sdlWindow, &m_sdlRenderer)) {
     SPDLOG_CRITICAL("Couldn't create window/renderer: {}", SDL_GetError());
     return SDL_APP_FAILURE;
   }
@@ -62,6 +77,10 @@ inline SDL_AppResult Window::setup() {
   }
 
   SDL_GL_MakeCurrent(m_sdlWindow, m_glContext);
+  SDL_GL_SetSwapInterval(1); // Enable vsync
+  SDL_ShowWindow(m_sdlWindow);
+
+  setupImgui();
 
   glViewport(0, 0, Config::Window::WIDTH, Config::Window::HEIGHT);
 
@@ -69,7 +88,10 @@ inline SDL_AppResult Window::setup() {
 
   return SDL_APP_CONTINUE;
 }
+
 inline SDL_AppResult Window::processEvent(const SDL_Event *event) {
+  ImGui_ImplSDL3_ProcessEvent(event);
+
   if (event->type == SDL_EVENT_QUIT) {
     return SDL_APP_SUCCESS;
   }
@@ -103,6 +125,11 @@ inline void Window::dispose() {
     SDL_DestroyWindow(m_sdlWindow);
     m_sdlWindow = nullptr;
   }
+
+  // Shutdown ImGui
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplSDL3_Shutdown();
+  ImGui::DestroyContext();
 }
 
 inline void Window::render() const {
@@ -110,8 +137,50 @@ inline void Window::render() const {
   constexpr float green = Config::Window::CLEAR_COLOR[1];
   constexpr float blue = Config::Window::CLEAR_COLOR[2];
 
+  // Start the Dear ImGui frame
+  ImGui_ImplOpenGL3_NewFrame();
+  ImGui_ImplSDL3_NewFrame();
+  ImGui::NewFrame();
+
+  // Show the demo window
+  static bool show_demo = true;
+  ImGui::ShowDemoWindow(&show_demo);
+
+  // Rendering
+  ImGui::Render();
+  const ImGuiIO &io = ImGui::GetIO();
+  (void)io;
+  glViewport(0, 0, static_cast<int>(io.DisplaySize.x),
+             static_cast<int>(io.DisplaySize.y));
   glClearColor(red, green, blue, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
   SDL_GL_SwapWindow(m_sdlWindow);
+}
+
+inline void Window::setupImgui() const {
+  const float mainScale = SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay());
+
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGuiIO &io = ImGui::GetIO();
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+
+  // Setup scaling
+  ImGuiStyle &style = ImGui::GetStyle();
+
+  // Bake a fixed style scale. (until we have a solution for
+  // dynamic style scaling, changing this requires resetting
+  // Style + calling this again)
+  style.ScaleAllSizes(mainScale);
+
+  // Set initial font scale. (using io.ConfigDpiScaleFonts=true
+  // makes this unnecessary. We leave both here for documentation purpose)
+  style.FontScaleDpi = mainScale;
+
+  // Setup Platform/Renderer backends
+  ImGui_ImplSDL3_InitForOpenGL(m_sdlWindow, m_glContext);
+  ImGui_ImplOpenGL3_Init("#version 330");
 }
 } // namespace App
