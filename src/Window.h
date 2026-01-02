@@ -14,6 +14,7 @@ struct Window {
   SDL_AppResult processEvent(const SDL_Event *event);
   void dispose();
   static void createImGuiWindows();
+  static void renderScene();
   void render() const;
 
 private:

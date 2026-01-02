@@ -1,5 +1,7 @@
 #include "Window.h"
 
+#include <memory>
+
 #include <backends/imgui_impl_opengl3.h>
 #include <backends/imgui_impl_sdl3.h>
 #include <imgui.h>
@@ -7,6 +9,9 @@
 #include <glad/glad.h>
 
 #include "Config.h"
+#include "Shader.h"
+#include "ShaderCache.h"
+#include "Sphere.h"
 
 namespace App {
 
@@ -122,6 +127,17 @@ void Window::createImGuiWindows() {
   ImGui::ColorEdit3("Clear Color", Config::Window::CLEAR_COLOR, ImGuiColorEditFlags_Float);
   ImGui::End();
 }
+void Window::renderScene() {
+  const std::shared_ptr<Shader> materialShader = ShaderCache::get("material");
+
+  materialShader->use();
+
+  const Sphere sphere(0.3f, 32, 32);
+
+  sphere.render(materialShader);
+
+  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
 
 void Window::render() const {
   ImGui_ImplOpenGL3_NewFrame();
@@ -138,7 +154,9 @@ void Window::render() const {
   const auto [r, g, b] = Config::Window::CLEAR_COLOR;
   glClearColor(r, g, b, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+  renderScene();
+
   SDL_GL_SwapWindow(m_sdlWindow);
 }
 

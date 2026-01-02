@@ -4,6 +4,8 @@
 #include <sstream>
 #include <iostream>
 
+constexpr auto SHADER_PATH = "resources/shaders/";
+
 namespace App {
 
 std::string loadShaderFile(const char *path) {
@@ -26,9 +28,12 @@ std::string loadShaderFile(const char *path) {
   return content;
 }
 
-Shader::Shader(const char *vertexPath, const char *fragmentPath) {
-  const std::string vertexCode = loadShaderFile(vertexPath);
-  const std::string fragmentCode = loadShaderFile(fragmentPath);
+Shader::Shader(const std::string &name) : Shader(SHADER_PATH + name + ".vert", SHADER_PATH + name + ".frag") {
+}
+
+Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) {
+  const std::string vertexCode = loadShaderFile(vertexPath.c_str());
+  const std::string fragmentCode = loadShaderFile(fragmentPath.c_str());
 
   const uint vertex = compile(vertexCode, ShaderType::VERTEX);
   const uint fragment = compile(fragmentCode, ShaderType::FRAGMENT);
@@ -44,6 +49,10 @@ Shader::Shader(const char *vertexPath, const char *fragmentPath) {
   // delete the shaders as they're linked into our program now and no longer necessary
   glDeleteShader(vertex);
   glDeleteShader(fragment);
+}
+
+Shader::~Shader() {
+  glDeleteProgram(ID);
 }
 
 void Shader::checkCompileErrors(const GLuint shader, const ShaderType type) {

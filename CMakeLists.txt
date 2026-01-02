@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 4.1.2)
 project(Minecraft)
 include_directories(include)
 
+file(CREATE_LINK "${PROJECT_SOURCE_DIR}/resources" "${CMAKE_CURRENT_BINARY_DIR}/resources" SYMBOLIC)
+
 # Include FetchContent module for downloading dependencies
 include(FetchContent)
 
@@ -68,12 +70,16 @@ add_executable(Minecraft
         src/glad.c
         src/main.cpp
         src/Config.h
-        src/Engine.cpp
         src/Engine.h
+        src/Engine.cpp
         src/Window.h
         src/Window.cpp
-        src/Shader.cpp
         src/Shader.h
+        src/Shader.cpp
+        src/Sphere.h
+        src/Sphere.cpp
+        src/ShaderCache.cpp
+        src/ShaderCache.h
 )
 
 target_link_libraries(Minecraft SDL3::SDL3 spdlog::spdlog OpenGL::GL)
