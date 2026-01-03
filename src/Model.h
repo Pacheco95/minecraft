@@ -80,7 +80,7 @@ private:
 
   void processNode(const aiNode *node, const aiScene *scene);
   void processMesh(aiMesh *aiMesh, const aiScene *scene);
-  Material processMaterial(const aiMaterial *aiMaterial, const aiScene *scene) const;
+  Material processMaterial(const aiMaterial *aiMaterial) const;
 };
 
 } // namespace App
