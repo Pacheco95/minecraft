@@ -6,8 +6,6 @@
 
 namespace App {
 
-
-
 struct Window {
   SDL_AppResult setup();
   SDL_AppResult processEvent(const SDL_Event *event);
