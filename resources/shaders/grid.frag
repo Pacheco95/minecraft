@@ -14,7 +14,7 @@ float chunkScale = 16.0;      // Size of the chunk cells
 
 // Colors
 vec4 colorGrid = vec4(0.5, 0.5, 0.5, 0.5); // Light Gray
-vec4 colorChunk = vec4(0.2, 0.2, 0.2, 0.8); // Darker, more opaque
+vec4 colorChunk = vec4(0.8);
 
 // Function to compute the depth buffer value manually
 // This allows the grid to properly interact with other objects in the scene

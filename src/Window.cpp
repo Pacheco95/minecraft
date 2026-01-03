@@ -157,8 +157,12 @@ void Window::renderScene() {
 
   auto model = glm::mat4(1.0f);
   const glm::mat4 view = camera.getViewMatrix();
+
+  const ImGuiIO &io = ImGui::GetIO();
+  const auto aspectRatio = io.DisplaySize.x / io.DisplaySize.y;
+
   const glm::mat4 projection =
-      glm::perspective(glm::radians(45.0f), (float)Config::Window::WIDTH / (float)Config::Window::HEIGHT, 0.1f, 100.0f);
+      glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
 
   FloorGrid::render(view, projection);
 
