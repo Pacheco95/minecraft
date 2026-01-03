@@ -136,17 +136,17 @@ void Window::createImGuiWindows() {
 void Window::renderScene() {
   const std::shared_ptr<Shader> materialShader = ShaderCache::get("material");
 
-  glm::mat4 model         = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-  glm::mat4 view          = glm::mat4(1.0f);
-  glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)Config::Window::WIDTH / (float)Config::Window::HEIGHT, 0.1f, 100.0f);
+  glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+  glm::mat4 view = glm::mat4(1.0f);
+  glm::mat4 projection =
+      glm::perspective(glm::radians(45.0f), (float)Config::Window::WIDTH / (float)Config::Window::HEIGHT, 0.1f, 100.0f);
 
   model = glm::rotate(model, SDL_GetTicks() / 1000.f, glm::vec3(0.5f, 0.5f, 0.0f));
-  view  = glm::translate(view, glm::vec3(0.0f, 0.0f, -5.0f));
+  view = glm::translate(view, glm::vec3(0.0f, 0.0f, -5.0f));
 
   materialShader->set("u_model", model);
   materialShader->set("u_view", view);
   materialShader->set("u_projection", projection);
-
 
   materialShader->use();
 
