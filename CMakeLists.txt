@@ -89,8 +89,10 @@ FetchContent_MakeAvailable(stb)
 
 add_executable(Minecraft
         src/glad.c
+        src/ImageLoader.cpp
         src/main.cpp
         src/Config.h
+
         src/Engine.h
         src/Engine.cpp
         src/Window.h
@@ -103,9 +105,12 @@ add_executable(Minecraft
         src/ShaderCache.h
         src/Model.h
         src/Model.cpp
-        src/Texture2D.cpp
         src/Texture2D.h
-        src/ImageLoader.cpp
+        src/Texture2D.cpp
+        src/Camera.h
+        src/Camera.cpp
+        src/Time.cpp
+        src/Time.h
 )
 
 target_link_libraries(Minecraft SDL3::SDL3 spdlog::spdlog OpenGL::GL assimp)

@@ -9,7 +9,7 @@ public:
   explicit Engine(Window *gameWindow);
 
   [[nodiscard]] Window *getWindow() const;
-  void processFrame(double deltaTime) const;
+  void processFrame() const;
 
 private:
   Window *m_gameWindow;

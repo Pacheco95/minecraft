@@ -6,6 +6,7 @@
 #include <backends/imgui_impl_sdl3.h>
 #include <imgui.h>
 
+#include "Camera.h"
 #include "Config.h"
 #include "Model.h"
 #include "Shader.h"
@@ -15,6 +16,7 @@
 namespace App {
 
 Model model3d;
+Camera camera;
 
 SDL_AppResult Window::setup() {
   SDL_SetAppMetadata("Minecraft", "0.1.0", "com.example.minecraft");
@@ -76,11 +78,15 @@ SDL_AppResult Window::setup() {
   model3d.load("resources/models/cube/cube.obj");
   model3d.setupAllBuffers();
 
+  camera.setActive(false);
+
   return SDL_APP_CONTINUE;
 }
 
 SDL_AppResult Window::processEvent(const SDL_Event *event) {
   ImGui_ImplSDL3_ProcessEvent(event);
+
+  camera.processEvent(event);
 
   if (event->type == SDL_EVENT_QUIT) {
     return SDL_APP_SUCCESS;
@@ -90,8 +96,14 @@ SDL_AppResult Window::processEvent(const SDL_Event *event) {
     const auto width = event->window.data1;
     const auto height = event->window.data2;
     glViewport(0, 0, width, height);
-    SPDLOG_DEBUG("Window resized: {} x {}", width, height);
     return SDL_APP_CONTINUE;
+  }
+
+  if (event->type == SDL_EVENT_KEY_DOWN) {
+    if (event->key.scancode == SDL_SCANCODE_TAB) {
+      camera.setActive(!camera.isActive());
+      SPDLOG_INFO("Camera toggled: {}", camera.isActive() ? "ON" : "OFF");
+    }
   }
 
   return SDL_APP_CONTINUE;
@@ -130,19 +142,21 @@ void Window::createImGuiWindows() {
   ImGui::SetNextWindowSizeConstraints(ImVec2(250, 250), ImVec2(FLT_MAX, FLT_MAX));
   ImGui::Begin("Engine Teaks", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
   ImGui::Text("FPS: %.2f", ImGui::GetIO().Framerate);
+  ImGui::Text("Camera Active: %s", camera.isActive() ? "Yes" : "No");
+  ImGui::Text("Camera Pos: %.2f, %.2f, %.2f", camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
   ImGui::ColorEdit3("Clear Color", Config::Window::CLEAR_COLOR, ImGuiColorEditFlags_Float);
   ImGui::End();
 }
+
 void Window::renderScene() {
   const std::shared_ptr<Shader> materialShader = ShaderCache::get("material");
 
-  glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-  glm::mat4 view = glm::mat4(1.0f);
-  glm::mat4 projection =
+  auto model = glm::mat4(1.0f);
+  const glm::mat4 view = camera.getViewMatrix();
+  const glm::mat4 projection =
       glm::perspective(glm::radians(45.0f), (float)Config::Window::WIDTH / (float)Config::Window::HEIGHT, 0.1f, 100.0f);
 
   model = glm::rotate(model, SDL_GetTicks() / 1000.f, glm::vec3(0.5f, 0.5f, 0.0f));
-  view = glm::translate(view, glm::vec3(0.0f, 0.0f, -5.0f));
 
   materialShader->set("u_model", model);
   materialShader->set("u_view", view);
@@ -152,14 +166,12 @@ void Window::renderScene() {
 
   model3d.render();
 
-  // const Sphere sphere(0.3f, 32, 32);
-  //
-  // sphere.render(materialShader);
-
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void Window::render() const {
+  camera.update(); // Update camera with fixed timestep
+
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplSDL3_NewFrame();
   ImGui::NewFrame();
