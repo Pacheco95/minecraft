@@ -6,14 +6,15 @@
 #include <backends/imgui_impl_sdl3.h>
 #include <imgui.h>
 
-#include <glad/glad.h>
-
 #include "Config.h"
+#include "Model.h"
 #include "Shader.h"
 #include "ShaderCache.h"
 #include "Sphere.h"
 
 namespace App {
+
+Model model3d;
 
 SDL_AppResult Window::setup() {
   SDL_SetAppMetadata("Minecraft", "0.1.0", "com.example.minecraft");
@@ -62,6 +63,8 @@ SDL_AppResult Window::setup() {
 
   SDL_GL_MakeCurrent(m_sdlWindow, m_glContext);
   SDL_GL_SetSwapInterval(1); // Enable vsync
+  glEnable(GL_DEPTH_TEST);
+
   SDL_ShowWindow(m_sdlWindow);
 
   setupImgui();
@@ -69,6 +72,9 @@ SDL_AppResult Window::setup() {
   glViewport(0, 0, Config::Window::WIDTH, Config::Window::HEIGHT);
 
   SPDLOG_INFO("SDL and OpenGL initialized successfully");
+
+  model3d.load("resources/models/cube/cube.obj");
+  model3d.setupAllBuffers();
 
   return SDL_APP_CONTINUE;
 }
@@ -130,11 +136,25 @@ void Window::createImGuiWindows() {
 void Window::renderScene() {
   const std::shared_ptr<Shader> materialShader = ShaderCache::get("material");
 
+  glm::mat4 model         = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+  glm::mat4 view          = glm::mat4(1.0f);
+  glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)Config::Window::WIDTH / (float)Config::Window::HEIGHT, 0.1f, 100.0f);
+
+  model = glm::rotate(model, SDL_GetTicks() / 1000.f, glm::vec3(0.5f, 0.5f, 0.0f));
+  view  = glm::translate(view, glm::vec3(0.0f, 0.0f, -5.0f));
+
+  materialShader->set("u_model", model);
+  materialShader->set("u_view", view);
+  materialShader->set("u_projection", projection);
+
+
   materialShader->use();
 
-  const Sphere sphere(0.3f, 32, 32);
+  model3d.render();
 
-  sphere.render(materialShader);
+  // const Sphere sphere(0.3f, 32, 32);
+  //
+  // sphere.render(materialShader);
 
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }

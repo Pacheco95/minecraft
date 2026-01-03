@@ -78,6 +78,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(assimp)
 
+FetchContent_Declare(
+        stb
+        GIT_REPOSITORY https://github.com/nothings/stb.git
+        GIT_TAG master
+)
+FetchContent_MakeAvailable(stb)
+
 # ========================= END DEPENDENCIES   =========================
 
 add_executable(Minecraft
@@ -94,9 +101,13 @@ add_executable(Minecraft
         src/Sphere.cpp
         src/ShaderCache.cpp
         src/ShaderCache.h
+        src/Model.h
+        src/Model.cpp
 )
 
 target_link_libraries(Minecraft SDL3::SDL3 spdlog::spdlog OpenGL::GL assimp)
+
+target_compile_definitions(Minecraft PRIVATE "STB_IMAGE_IMPLEMENTATION")
 
 # Compile ImGui sources into the executable (includes SDL3 + OpenGL3 backends)
 target_sources(Minecraft PRIVATE
@@ -114,6 +125,7 @@ target_include_directories(Minecraft PRIVATE
     ${glm_SOURCE_DIR}
     ${assimp_SOURCE_DIR}/include
     ${CMAKE_BINARY_DIR}/_deps/assimp-build/include
+    ${stb_SOURCE_DIR}
 )
 
 set_target_properties(Minecraft PROPERTIES
