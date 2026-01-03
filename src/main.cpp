@@ -13,7 +13,6 @@
 
 using namespace App;
 
-
 constexpr Engine *asEngine(void *appstate) {
   auto *engine = static_cast<Engine *>(appstate);
   return engine;

@@ -11,7 +11,7 @@ public:
   Camera();
 
   void update();
-  void processEvent(const SDL_Event* event);
+  void processEvent(const SDL_Event *event);
 
   void setActive(bool active);
   [[nodiscard]] bool isActive() const;

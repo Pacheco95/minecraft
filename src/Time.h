@@ -16,4 +16,4 @@ private:
   static DeltaTime m_deltaTime;
 };
 
-}
+} // namespace App
