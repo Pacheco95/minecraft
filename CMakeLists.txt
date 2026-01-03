@@ -93,8 +93,6 @@ add_executable(Minecraft
         src/main.cpp
         src/Config.h
 
-        src/Engine.h
-        src/Engine.cpp
         src/Window.h
         src/Window.cpp
         src/Shader.h
@@ -111,6 +109,8 @@ add_executable(Minecraft
         src/Camera.cpp
         src/Time.cpp
         src/Time.h
+        src/FloorGrid.cpp
+        src/FloorGrid.h
 )
 
 target_link_libraries(Minecraft SDL3::SDL3 spdlog::spdlog OpenGL::GL assimp)

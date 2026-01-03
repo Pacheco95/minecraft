@@ -4,8 +4,8 @@
 
 namespace App {
 
-Camera::Camera()
-    : m_position(0.0f, 0.0f, 3.0f), m_front(0.0f, 0.0f, -1.0f), m_up(0.0f, 1.0f, 0.0f), m_right(0),
+Camera::Camera(const glm::vec3& position)
+    : m_position(position), m_front(0.0f, 0.0f, -1.0f), m_up(0.0f, 1.0f, 0.0f), m_right(0),
       m_worldUp(0.0f, 1.0f, 0.0f), m_yaw(-90.0f), m_pitch(0.0f), m_baseSpeed(5.0f), m_speed(5.0f),
       m_boostMultiplier(1.5f), m_sensitivity(30.0f), m_active(false), m_mousePressed(false) {
   updateCameraVectors();

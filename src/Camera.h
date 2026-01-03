@@ -8,7 +8,7 @@ namespace App {
 
 class Camera {
 public:
-  Camera();
+  explicit Camera(const glm::vec3& position = glm::vec3(0));
 
   void update();
   void processEvent(const SDL_Event *event);

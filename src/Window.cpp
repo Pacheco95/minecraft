@@ -8,15 +8,15 @@
 
 #include "Camera.h"
 #include "Config.h"
+#include "FloorGrid.h"
 #include "Model.h"
 #include "Shader.h"
 #include "ShaderCache.h"
-#include "Sphere.h"
 
 namespace App {
 
 Model model3d;
-Camera camera;
+Camera camera({0.0f, 3.0f, 0.0f});
 
 SDL_AppResult Window::setup() {
   SDL_SetAppMetadata("Minecraft", "0.1.0", "com.example.minecraft");
@@ -56,16 +56,19 @@ SDL_AppResult Window::setup() {
     return SDL_APP_FAILURE;
   }
 
-  const auto loader = reinterpret_cast<GLADloadproc>(SDL_GL_GetProcAddress);
+  const auto openGlProcedureLoader = reinterpret_cast<GLADloadproc>(SDL_GL_GetProcAddress);
 
-  if (!gladLoadGLLoader(loader)) {
+  if (!gladLoadGLLoader(openGlProcedureLoader)) {
     logger->critical("Couldn't initialize GLAD");
     return SDL_APP_FAILURE;
   }
 
   SDL_GL_MakeCurrent(m_sdlWindow, m_glContext);
   SDL_GL_SetSwapInterval(1); // Enable vsync
+
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   SDL_ShowWindow(m_sdlWindow);
 
@@ -79,6 +82,7 @@ SDL_AppResult Window::setup() {
   model3d.setupAllBuffers();
 
   camera.setActive(false);
+  FloorGrid::setup();
 
   return SDL_APP_CONTINUE;
 }
@@ -156,6 +160,8 @@ void Window::renderScene() {
   const glm::mat4 projection =
       glm::perspective(glm::radians(45.0f), (float)Config::Window::WIDTH / (float)Config::Window::HEIGHT, 0.1f, 100.0f);
 
+  FloorGrid::render(view, projection);
+
   model = glm::rotate(model, SDL_GetTicks() / 1000.f, glm::vec3(0.5f, 0.5f, 0.0f));
 
   materialShader->set("u_model", model);
@@ -170,7 +176,7 @@ void Window::renderScene() {
 }
 
 void Window::render() const {
-  camera.update(); // Update camera with fixed timestep
+  camera.update();
 
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplSDL3_NewFrame();
