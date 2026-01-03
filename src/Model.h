@@ -2,12 +2,15 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 #include <glm/glm.hpp>
 #include <glad/glad.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <spdlog/spdlog.h>
+
+#include "Texture2D.h"
 
 namespace App {
 
@@ -24,15 +27,12 @@ struct Material {
   glm::vec3 ambient;
   glm::vec3 diffuse;
   glm::vec3 specular;
-  float shininess;
-  std::string diffuseTexturePath;
-  std::string normalTexturePath;
-  std::string specularTexturePath;
 
-  // OpenGL texture handles
-  GLuint diffuseTextureID = 0;
-  GLuint normalTextureID = 0;
-  GLuint specularTextureID = 0;
+  float shininess;
+
+  std::shared_ptr<Texture2D> diffuseTexture;
+  std::shared_ptr<Texture2D> normalTexture;
+  std::shared_ptr<Texture2D> specularTexture;
 };
 
 // Mesh structure with OpenGL handles
@@ -65,12 +65,12 @@ public:
   void setupAllBuffers();
   void render() const;
   void renderMesh(size_t meshIndex) const;
-  const std::vector<Mesh> &getMeshes() const;
+  [[nodiscard]] const std::vector<Mesh> &getMeshes() const;
   std::vector<Mesh> &getMeshes();
-  size_t getMeshCount() const;
-  const Mesh *getMesh(size_t index) const;
+  [[nodiscard]] size_t getMeshCount() const;
+  [[nodiscard]] const Mesh *getMesh(size_t index) const;
   Mesh *getMesh(size_t index);
-  bool isLoaded() const;
+  [[nodiscard]] bool isLoaded() const;
 
 private:
   std::vector<Mesh> meshes;
@@ -78,10 +78,9 @@ private:
 
   void cleanup();
 
-  void processNode(aiNode *node, const aiScene *scene);
+  void processNode(const aiNode *node, const aiScene *scene);
   void processMesh(aiMesh *aiMesh, const aiScene *scene);
-  Material processMaterial(aiMaterial *aiMaterial, const aiScene *scene) const;
-  GLuint loadTexture(const std::string &texturePath) const;
+  Material processMaterial(const aiMaterial *aiMaterial, const aiScene *scene) const;
 };
 
 } // namespace App

@@ -103,11 +103,14 @@ add_executable(Minecraft
         src/ShaderCache.h
         src/Model.h
         src/Model.cpp
+        src/Texture2D.cpp
+        src/Texture2D.h
+        src/ImageLoader.cpp
 )
 
 target_link_libraries(Minecraft SDL3::SDL3 spdlog::spdlog OpenGL::GL assimp)
 
-target_compile_definitions(Minecraft PRIVATE "STB_IMAGE_IMPLEMENTATION")
+target_compile_definitions(Minecraft PRIVATE "SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE")
 
 # Compile ImGui sources into the executable (includes SDL3 + OpenGL3 backends)
 target_sources(Minecraft PRIVATE
@@ -119,6 +122,7 @@ target_sources(Minecraft PRIVATE
     ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
     ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
 )
+
 target_include_directories(Minecraft PRIVATE
     ${imgui_SOURCE_DIR}
     ${imgui_SOURCE_DIR}/backends

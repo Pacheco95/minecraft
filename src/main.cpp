@@ -1,5 +1,4 @@
 #define SDL_MAIN_USE_CALLBACKS 1
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
 #include <spdlog/spdlog.h>
 
@@ -33,6 +32,8 @@ double getDeltaTime() {
 }
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
+  spdlog::set_level(spdlog::level::trace);
+
   static Window window;
   static Engine engine(&window);
 

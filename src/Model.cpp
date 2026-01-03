@@ -140,13 +140,13 @@ size_t Model::getMeshCount() const {
   return meshes.size();
 }
 
-const Mesh *Model::getMesh(size_t index) const {
+const Mesh *Model::getMesh(const size_t index) const {
   if (index >= meshes.size())
     return nullptr;
   return &meshes[index];
 }
 
-Mesh *Model::getMesh(size_t index) {
+Mesh *Model::getMesh(const size_t index) {
   if (index >= meshes.size())
     return nullptr;
   return &meshes[index];
@@ -157,19 +157,11 @@ bool Model::isLoaded() const {
 }
 
 void Model::cleanup() {
-  // Clean up textures
-  for (auto &mesh : meshes) {
-    if (mesh.material.diffuseTextureID != 0)
-      glDeleteTextures(1, &mesh.material.diffuseTextureID);
-    if (mesh.material.normalTextureID != 0)
-      glDeleteTextures(1, &mesh.material.normalTextureID);
-    if (mesh.material.specularTextureID != 0)
-      glDeleteTextures(1, &mesh.material.specularTextureID);
-  }
+  // Textures are cleared by Texture2D class destructor
   meshes.clear();
 }
 
-void Model::processNode(aiNode *node, const aiScene *scene) {
+void Model::processNode(const aiNode *node, const aiScene *scene) {
   // Process all meshes at this node
   for (unsigned int i = 0; i < node->mNumMeshes; ++i) {
     aiMesh *aiMesh = scene->mMeshes[node->mMeshes[i]];
@@ -189,7 +181,7 @@ void Model::processMesh(aiMesh *aiMesh, const aiScene *scene) {
   mesh.vertices.reserve(aiMesh->mNumVertices);
 
   for (unsigned int i = 0; i < aiMesh->mNumVertices; ++i) {
-    Vertex vertex;
+    Vertex vertex{};
 
     // Position
     vertex.position = glm::vec3(
@@ -260,58 +252,54 @@ void Model::processMesh(aiMesh *aiMesh, const aiScene *scene) {
     mesh.material.shininess = 32.0f;
   }
 
-  SPDLOG_DEBUG("Processed mesh: {} vertices, {} indices, material: {}",
-               mesh.vertices.size(), mesh.indices.size(),
-               mesh.material.diffuseTexturePath.empty() ? "default" : mesh.material.diffuseTexturePath);
-
   meshes.emplace_back(mesh);
 }
 
-Material Model::processMaterial(aiMaterial *aiMat, const aiScene *scene) const {
+Material Model::processMaterial(const aiMaterial *aiMaterial, const aiScene *scene) const {
   Material material;
 
   // Get diffuse color
   aiColor3D diffuse(0.0f, 0.0f, 0.0f);
-  aiMat->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
+  aiMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
   material.diffuse = glm::vec3(diffuse.r, diffuse.g, diffuse.b);
 
   // Get ambient color
   aiColor3D ambient(0.0f, 0.0f, 0.0f);
-  aiMat->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
+  aiMaterial->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
   material.ambient = glm::vec3(ambient.r, ambient.g, ambient.b);
 
   // Get specular color
   aiColor3D specular(0.5f, 0.5f, 0.5f);
-  aiMat->Get(AI_MATKEY_COLOR_SPECULAR, specular);
+  aiMaterial->Get(AI_MATKEY_COLOR_SPECULAR, specular);
   material.specular = glm::vec3(specular.r, specular.g, specular.b);
 
   // Get shininess
   float shininess = 32.0f;
-  aiMat->Get(AI_MATKEY_SHININESS, shininess);
+  aiMaterial->Get(AI_MATKEY_SHININESS, shininess);
   material.shininess = shininess;
 
   // Get texture paths
   aiString texPath;
 
   // Diffuse texture
-  if (aiMat->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
-    aiMat->GetTexture(aiTextureType_DIFFUSE, 0, &texPath);
-    material.diffuseTexturePath = std::string(texPath.C_Str());
-    material.diffuseTextureID = loadTexture(material.diffuseTexturePath);
+  if (aiMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
+    aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &texPath);
+    material.diffuseTexture = std::make_shared<Texture2D>(modelDirectory + "/" + texPath.C_Str());
+    material.diffuseTexture->load();
   }
 
   // Normal texture
-  if (aiMat->GetTextureCount(aiTextureType_HEIGHT) > 0) {
-    aiMat->GetTexture(aiTextureType_HEIGHT, 0, &texPath);
-    material.normalTexturePath = std::string(texPath.C_Str());
-    material.normalTextureID = loadTexture(material.normalTexturePath);
+  if (aiMaterial->GetTextureCount(aiTextureType_HEIGHT) > 0) {
+    aiMaterial->GetTexture(aiTextureType_HEIGHT, 0, &texPath);
+    material.normalTexture = std::make_shared<Texture2D>(modelDirectory + "/" + texPath.C_Str());
+    material.normalTexture->load();
   }
 
   // Specular texture
-  if (aiMat->GetTextureCount(aiTextureType_SPECULAR) > 0) {
-    aiMat->GetTexture(aiTextureType_SPECULAR, 0, &texPath);
-    material.specularTexturePath = std::string(texPath.C_Str());
-    material.specularTextureID = loadTexture(material.specularTexturePath);
+  if (aiMaterial->GetTextureCount(aiTextureType_SPECULAR) > 0) {
+    aiMaterial->GetTexture(aiTextureType_SPECULAR, 0, &texPath);
+    material.specularTexture = std::make_shared<Texture2D>(modelDirectory + "/" + texPath.C_Str());
+    material.specularTexture->load();
   }
 
   SPDLOG_DEBUG("Processed material: diffuse=({}, {}, {}), ambient=({}, {}, {}), "
@@ -322,60 +310,6 @@ Material Model::processMaterial(aiMaterial *aiMat, const aiScene *scene) const {
                material.shininess);
 
   return material;
-}
-
-GLuint Model::loadTexture(const std::string &texturePath) const {
-  if (texturePath.empty()) {
-    SPDLOG_WARN("Texture path is empty");
-    return 0;
-  }
-
-  // Construct full path
-  std::string fullPath = modelDirectory + "/" + texturePath;
-
-  // Check if file exists
-  if (!std::filesystem::exists(fullPath)) {
-    SPDLOG_WARN("Texture file not found: {}", fullPath);
-    return 0;
-  }
-
-  int width, height, channels;
-  unsigned char *data = stbi_load(fullPath.c_str(), &width, &height, &channels, 0);
-
-  if (!data) {
-    SPDLOG_ERROR("Failed to load texture: {}", fullPath);
-    return 0;
-  }
-
-  GLuint textureID;
-  glGenTextures(1, &textureID);
-  glBindTexture(GL_TEXTURE_2D, textureID);
-
-  // Set texture wrapping parameters
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-  // Set texture filtering parameters
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-  // Determine format based on channel count
-  GLenum format = GL_RGB;
-  if (channels == 1) format = GL_RED;
-  else if (channels == 3) format = GL_RGB;
-  else if (channels == 4) format = GL_RGBA;
-
-  // Upload texture data
-  glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-  glGenerateMipmap(GL_TEXTURE_2D);
-
-  // Free image data
-  stbi_image_free(data);
-
-  SPDLOG_DEBUG("Loaded texture: {} ({}x{}, {} channels) - ID: {}",
-               fullPath, width, height, channels, textureID);
-
-  return textureID;
 }
 
 } // namespace App
