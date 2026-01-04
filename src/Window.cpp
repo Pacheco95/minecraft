@@ -2,21 +2,15 @@
 
 #include <memory>
 
-#include <backends/imgui_impl_opengl3.h>
-#include <backends/imgui_impl_sdl3.h>
 #include <imgui.h>
 
-#include "Camera.h"
-#include "Config.h"
-#include "FloorGrid.h"
+#include "Container.h"
 #include "Model.h"
-#include "Shader.h"
-#include "ShaderCache.h"
+#include "Config.h"
 
 namespace App {
 
 Model model3d;
-Camera camera({0.0f, 3.0f, 0.0f});
 
 SDL_AppResult Window::setup() {
   SDL_SetAppMetadata("Minecraft", "0.1.0", "com.example.minecraft");
@@ -72,7 +66,7 @@ SDL_AppResult Window::setup() {
 
   SDL_ShowWindow(m_sdlWindow);
 
-  setupImgui();
+  g_imguiManager.setup();
 
   glViewport(0, 0, Config::Window::WIDTH, Config::Window::HEIGHT);
 
@@ -81,16 +75,16 @@ SDL_AppResult Window::setup() {
   model3d.load("resources/models/cube/cube.obj");
   model3d.setupAllBuffers();
 
-  camera.setActive(false);
-  FloorGrid::setup();
+  g_camera.setActive(false);
+  g_floorGrid.setup();
 
   return SDL_APP_CONTINUE;
 }
 
 SDL_AppResult Window::processEvent(const SDL_Event *event) {
-  ImGui_ImplSDL3_ProcessEvent(event);
+  g_imguiManager.processEvent(event);
 
-  camera.processEvent(event);
+  g_camera.processEvent(event);
 
   if (event->type == SDL_EVENT_QUIT) {
     return SDL_APP_SUCCESS;
@@ -105,8 +99,8 @@ SDL_AppResult Window::processEvent(const SDL_Event *event) {
 
   if (event->type == SDL_EVENT_KEY_DOWN) {
     if (event->key.scancode == SDL_SCANCODE_TAB) {
-      camera.setActive(!camera.isActive());
-      SPDLOG_INFO("Camera toggled: {}", camera.isActive() ? "ON" : "OFF");
+      g_camera.toggle();
+      SPDLOG_INFO("Camera toggled: {}", g_camera.isActive() ? "ON" : "OFF");
     }
   }
 
@@ -131,11 +125,6 @@ void Window::dispose() {
     SDL_DestroyWindow(m_sdlWindow);
     m_sdlWindow = nullptr;
   }
-
-  // Shutdown ImGui
-  ImGui_ImplOpenGL3_Shutdown();
-  ImGui_ImplSDL3_Shutdown();
-  ImGui::DestroyContext();
 }
 
 void Window::createImGuiWindows() {
@@ -145,24 +134,23 @@ void Window::createImGuiWindows() {
 
   ImGui::SetNextWindowSizeConstraints(ImVec2(250, 250), ImVec2(FLT_MAX, FLT_MAX));
   ImGui::Begin("Engine Teaks", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-  ImGui::Text("FPS: %.2f", ImGui::GetIO().Framerate);
-  ImGui::Text("Camera Active: %s", camera.isActive() ? "Yes" : "No");
-  ImGui::Text("Camera Pos: %.2f, %.2f, %.2f", camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
+  ImGui::Text("FPS: %.2f", g_imguiManager.io().Framerate);
+  ImGui::Text("Camera Active: %s", g_camera.isActive() ? "Yes" : "No");
+  ImGui::Text("Camera Pos: %.2f, %.2f, %.2f", g_camera.getPosition().x, g_camera.getPosition().y, g_camera.getPosition().z);
   ImGui::ColorEdit3("Clear Color", Config::Window::CLEAR_COLOR, ImGuiColorEditFlags_Float);
   ImGui::End();
 }
 
-void Window::renderScene() {
-  const std::shared_ptr<Shader> materialShader = ShaderCache::get("material");
+void Window::renderOpenGlData() {
+  const std::shared_ptr<Shader> materialShader = g_shaderCache.get("material");
 
   auto model = glm::mat4(1.0f);
-  const glm::mat4 view = camera.getViewMatrix();
+  const glm::mat4 view = g_camera.getViewMatrix();
 
-  const ImGuiIO &io = ImGui::GetIO();
+  const ImGuiIO &io = g_imguiManager.io();
   const auto aspectRatio = io.DisplaySize.x / io.DisplaySize.y;
 
-  const glm::mat4 projection =
-      glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
+  const glm::mat4 projection = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
 
   FloorGrid::render(view, projection);
 
@@ -175,56 +163,28 @@ void Window::renderScene() {
   materialShader->use();
 
   model3d.render();
-
-  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void Window::render() const {
-  camera.update();
+  g_camera.update();
 
-  ImGui_ImplOpenGL3_NewFrame();
-  ImGui_ImplSDL3_NewFrame();
-  ImGui::NewFrame();
+  g_imguiManager.newFrame();
 
   createImGuiWindows();
 
   // Rendering
-  ImGui::Render();
-  const ImGuiIO &io = ImGui::GetIO();
-  glViewport(0, 0, static_cast<int>(io.DisplaySize.x), static_cast<int>(io.DisplaySize.y));
+  g_imguiManager.populateFrame();
 
+  auto [width, height] = g_imguiManager.io().DisplaySize;
   const auto [r, g, b] = Config::Window::CLEAR_COLOR;
+
+  glViewport(0, 0, static_cast<int>(width), static_cast<int>(height));
   glClearColor(r, g, b, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  renderScene();
+  renderOpenGlData();
 
+  g_imguiManager.renderFrame();
   SDL_GL_SwapWindow(m_sdlWindow);
-}
-
-void Window::setupImgui() const {
-  const float mainScale = SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay());
-
-  IMGUI_CHECKVERSION();
-  ImGui::CreateContext();
-  ImGuiIO &io = ImGui::GetIO();
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-
-  // Setup scaling
-  ImGuiStyle &style = ImGui::GetStyle();
-
-  // Bake a fixed style scale. (until we have a solution for
-  // dynamic style scaling, changing this requires resetting
-  // Style + calling this again)
-  style.ScaleAllSizes(mainScale);
-
-  // Set initial font scale. (using io.ConfigDpiScaleFonts=true
-  // makes this unnecessary. We leave both here for documentation purpose)
-  style.FontScaleDpi = mainScale;
-
-  // Setup Platform/Renderer backends
-  ImGui_ImplSDL3_InitForOpenGL(m_sdlWindow, m_glContext);
-  ImGui_ImplOpenGL3_Init("#version 330");
 }
 } // namespace App

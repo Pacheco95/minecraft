@@ -1,7 +1,6 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <SDL3/SDL.h>
 
 namespace App {
@@ -14,6 +13,7 @@ public:
   void processEvent(const SDL_Event *event);
 
   void setActive(bool active);
+  void toggle();
   [[nodiscard]] bool isActive() const;
 
   [[nodiscard]] glm::mat4 getViewMatrix() const;

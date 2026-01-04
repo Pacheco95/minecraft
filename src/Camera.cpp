@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-#include "Time.h"
+#include "Container.h"
 
 namespace App {
 
@@ -26,8 +26,9 @@ void Camera::processEvent(const SDL_Event *event) {
     return;
 
   if (event->type == SDL_EVENT_MOUSE_MOTION && m_mousePressed) {
-    const float xOffset = event->motion.xrel * m_sensitivity * Time::deltaTime();
-    const float yOffset = -event->motion.yrel * m_sensitivity * Time::deltaTime();
+    const auto deltaTIme = g_container.m_time->deltaTime();
+    const float xOffset = event->motion.xrel * m_sensitivity * deltaTIme;
+    const float yOffset = -event->motion.yrel * m_sensitivity * deltaTIme;
 
     m_yaw += xOffset;
     m_pitch += yOffset;
@@ -55,6 +56,10 @@ void Camera::setActive(const bool active) {
   updateCursorCapture();
 }
 
+void Camera::toggle() {
+  setActive(!m_active);
+}
+
 bool Camera::isActive() const {
   return m_active;
 }
@@ -80,7 +85,7 @@ void Camera::updateCameraVectors() {
 
 void Camera::handleKeyInput() {
   const bool *keys = SDL_GetKeyboardState(nullptr);
-  const float frameSpeed = m_speed * Time::deltaTime();
+  const float frameSpeed = m_speed * g_container.m_time->deltaTime();
 
   if (keys[SDL_SCANCODE_W]) {
     m_position += m_front * frameSpeed;

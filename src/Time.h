@@ -7,13 +7,13 @@ using DeltaTime = float;
 
 class Time {
 public:
-  static DeltaTime deltaTime();
+  [[nodiscard]] DeltaTime deltaTime() const;
 
-  static void update();
+  void update();
 
 private:
-  static Uint64 m_lastFrameTime;
-  static DeltaTime m_deltaTime;
+  Uint64 m_lastFrameTime = 0;
+  DeltaTime m_deltaTime = 0;
 };
 
 } // namespace App

@@ -97,8 +97,6 @@ add_executable(Minecraft
         src/Window.cpp
         src/Shader.h
         src/Shader.cpp
-        src/Sphere.h
-        src/Sphere.cpp
         src/ShaderCache.cpp
         src/ShaderCache.h
         src/Model.h
@@ -111,6 +109,9 @@ add_executable(Minecraft
         src/Time.h
         src/FloorGrid.cpp
         src/FloorGrid.h
+        src/ImGuiManager.h
+        src/Container.h
+        src/ImGuiManager.cpp
 )
 
 target_link_libraries(Minecraft SDL3::SDL3 spdlog::spdlog OpenGL::GL assimp)

@@ -1,5 +1,7 @@
 #include "FloorGrid.h"
 
+#include "Container.h"
+
 namespace App {
 
 GLuint FloorGrid::gridVAO = 0;
@@ -19,7 +21,7 @@ FloorGrid::~FloorGrid() {
 }
 
 void FloorGrid::setup() {
-  gridShader = ShaderCache::get("grid");
+  gridShader = g_container.m_shaderCache->get("grid");
 
   if (!gridVAO) {
     glGenVertexArrays(1, &gridVAO);

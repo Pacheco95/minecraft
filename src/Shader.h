@@ -20,7 +20,7 @@ class Shader {
 public:
   unsigned int ID;
 
-  Shader(const std::string &name);
+  explicit Shader(const std::string &name);
 
   Shader(const std::string &vertexPath, const std::string &fragmentPath);
 

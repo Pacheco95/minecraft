@@ -6,7 +6,6 @@
 #include <glm/glm.hpp>
 
 #include "Shader.h"
-#include "ShaderCache.h"
 
 namespace App {
 class FloorGrid {

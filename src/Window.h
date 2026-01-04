@@ -18,8 +18,7 @@ private:
   SDL_Renderer *m_sdlRenderer = nullptr;
   SDL_GLContext m_glContext = nullptr;
 
-  void setupImgui() const;
   static void createImGuiWindows();
-  static void renderScene();
+  static void renderOpenGlData();
 };
 } // namespace App

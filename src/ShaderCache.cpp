@@ -14,6 +14,4 @@ std::shared_ptr<Shader> ShaderCache::get(const std::string &name) {
   return shader;
 }
 
-std::unordered_map<std::string, std::shared_ptr<Shader>> ShaderCache::s_cache = {};
-
 } // namespace App
