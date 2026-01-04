@@ -64,12 +64,6 @@ public:
   void load(const std::string &filePath);
   void setupAllBuffers();
   void render() const;
-  void renderMesh(size_t meshIndex) const;
-  [[nodiscard]] const std::vector<Mesh> &getMeshes() const;
-  std::vector<Mesh> &getMeshes();
-  [[nodiscard]] size_t getMeshCount() const;
-  [[nodiscard]] const Mesh *getMesh(size_t index) const;
-  Mesh *getMesh(size_t index);
   [[nodiscard]] bool isLoaded() const;
 
 private:

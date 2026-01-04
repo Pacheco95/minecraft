@@ -135,38 +135,6 @@ void Model::render() const {
   }
 }
 
-void Model::renderMesh(size_t meshIndex) const {
-  if (meshIndex >= meshes.size()) {
-    SPDLOG_WARN("Mesh index {} out of range", meshIndex);
-    return;
-  }
-  meshes[meshIndex].render();
-}
-
-const std::vector<Mesh> &Model::getMeshes() const {
-  return meshes;
-}
-
-std::vector<Mesh> &Model::getMeshes() {
-  return meshes;
-}
-
-size_t Model::getMeshCount() const {
-  return meshes.size();
-}
-
-const Mesh *Model::getMesh(const size_t index) const {
-  if (index >= meshes.size())
-    return nullptr;
-  return &meshes[index];
-}
-
-Mesh *Model::getMesh(const size_t index) {
-  if (index >= meshes.size())
-    return nullptr;
-  return &meshes[index];
-}
-
 bool Model::isLoaded() const {
   return !meshes.empty();
 }
