@@ -99,9 +99,7 @@ SDL_AppResult Window::processEvent(const SDL_Event *event) {
   }
 
   if (event->type == SDL_EVENT_KEY_DOWN) {
-    if (event->key.scancode == SDL_SCANCODE_TAB) {
-      g_camera.toggle();
-    } else if (event->key.scancode == SDL_SCANCODE_KP_0) {
+    if (event->key.scancode == SDL_SCANCODE_KP_0) {
       g_camera.reset();
     }
   }

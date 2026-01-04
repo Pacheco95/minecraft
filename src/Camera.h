@@ -13,8 +13,6 @@ public:
   void processEvent(const SDL_Event *event);
 
   void setActive(bool active);
-  void toggle();
-  [[nodiscard]] bool isActive() const;
 
   [[nodiscard]] glm::mat4 getViewMatrix() const;
   [[nodiscard]] glm::vec3 getPosition() const;
@@ -35,7 +33,6 @@ private:
   float m_boostMultiplier;
   float m_sensitivity;
 
-  bool m_active;
   bool m_mousePressed;
 
   void lookAtOrigin();

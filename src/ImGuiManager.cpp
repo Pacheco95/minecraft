@@ -49,7 +49,6 @@ void App::ImGuiManager::populateFrame() {
   ImGui::SetNextWindowSizeConstraints(ImVec2(250, 250), ImVec2(FLT_MAX, FLT_MAX));
   ImGui::Begin("Engine Teaks", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing);
   ImGui::Text("FPS: %.2f", io().Framerate);
-  ImGui::Text("Camera Active: %s", g_camera.isActive() ? "Yes" : "No");
   ImGui::Text("Camera Pos: %.2f, %.2f, %.2f", g_camera.getPosition().x, g_camera.getPosition().y,
               g_camera.getPosition().z);
   ImGui::ColorEdit3("Clear Color", Config::Window::CLEAR_COLOR, ImGuiColorEditFlags_Float);

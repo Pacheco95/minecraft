@@ -7,14 +7,11 @@ namespace App {
 Camera::Camera(const glm::vec3 &position)
     : m_position(position), m_initialPosition(m_position), m_front(0.0f, 0.0f, -1.0f), m_up(0.0f, 1.0f, 0.0f),
       m_right(0), m_worldUp(0.0f, 1.0f, 0.0f), m_yaw(-90.0f), m_pitch(0.0f), m_baseSpeed(1.0f), m_speed(1.0f),
-      m_boostMultiplier(3.0f), m_sensitivity(30.0f), m_active(false), m_mousePressed(false) {
+      m_boostMultiplier(3.0f), m_sensitivity(30.0f), m_mousePressed(false) {
   reset();
 }
 
 void Camera::update() {
-  if (!m_active)
-    return;
-
   handleKeyInput();
   m_speed = SDL_GetKeyboardState(nullptr)[SDL_SCANCODE_LSHIFT] ? m_baseSpeed * m_boostMultiplier : m_baseSpeed;
 
@@ -22,9 +19,6 @@ void Camera::update() {
 }
 
 void Camera::processEvent(const SDL_Event *event) {
-  if (!m_active)
-    return;
-
   if (event->type == SDL_EVENT_MOUSE_MOTION && m_mousePressed) {
     const auto deltaTIme = g_container.m_time->deltaTime();
     const float xOffset = event->motion.xrel * m_sensitivity * deltaTIme;
@@ -51,17 +45,8 @@ void Camera::processEvent(const SDL_Event *event) {
 }
 
 void Camera::setActive(const bool active) {
-  m_active = active;
   m_mousePressed = false;
   updateCursorCapture();
-}
-
-void Camera::toggle() {
-  setActive(!m_active);
-}
-
-bool Camera::isActive() const {
-  return m_active;
 }
 
 glm::mat4 Camera::getViewMatrix() const {
@@ -117,7 +102,7 @@ void Camera::handleKeyInput() {
     m_position += m_right * frameSpeed;
   }
 
-  if (keys[SDL_SCANCODE_E]) {
+  if (keys[SDL_SCANCODE_SPACE]) {
     m_position += m_up * frameSpeed;
   }
 
@@ -127,7 +112,7 @@ void Camera::handleKeyInput() {
 }
 
 void Camera::updateCursorCapture() const {
-  if (m_active && m_mousePressed) {
+  if (m_mousePressed) {
     SDL_SetWindowRelativeMouseMode(SDL_GetMouseFocus(), true);
   } else {
     SDL_SetWindowRelativeMouseMode(SDL_GetMouseFocus(), false);
