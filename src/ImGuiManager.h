@@ -22,4 +22,4 @@ public:
 
   const ImGuiIO &io() const;
 };
-}
+} // namespace App
