@@ -18,9 +18,11 @@ public:
 
   [[nodiscard]] glm::mat4 getViewMatrix() const;
   [[nodiscard]] glm::vec3 getPosition() const;
+  void reset();
 
 private:
   glm::vec3 m_position;
+  const glm::vec3 m_initialPosition;
   glm::vec3 m_front;
   glm::vec3 m_up;
   glm::vec3 m_right;
