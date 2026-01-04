@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Axis.h"
+
 #include <memory>
 
 #include "ImGuiManager.h"
@@ -18,6 +20,7 @@ public:
   std::shared_ptr<ShaderCache> m_shaderCache = nullptr;
   std::shared_ptr<Camera> m_camera = nullptr;
   std::shared_ptr<FloorGrid> m_floorGrid = nullptr;
+  std::shared_ptr<Axis> m_axis = nullptr;
 
   Container(const Container &) = delete;
   Container &operator=(const Container &) = delete;
@@ -35,8 +38,9 @@ public:
     m_imguiManager = std::make_shared<ImGuiManager>();
     m_time = std::make_shared<Time>();
     m_shaderCache = std::make_shared<ShaderCache>();
-    m_camera = std::make_shared<Camera>(glm::vec3(0.0f, 3.0f, 0.0f));
+    m_camera = std::make_shared<Camera>(glm::vec3(4.0f, 2.0f, 4.0f));
     m_floorGrid = std::make_shared<FloorGrid>();
+    m_axis = std::make_shared<Axis>();
   }
 
   void dispose() {
@@ -64,3 +68,4 @@ inline const App::Container &container = App::Container::getInstance();
 #define g_shaderCache (*container.m_shaderCache)
 #define g_camera (*container.m_camera)
 #define g_floorGrid (*container.m_floorGrid)
+#define g_axis (*container.m_axis)

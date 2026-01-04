@@ -112,6 +112,8 @@ add_executable(Minecraft
         src/ImGuiManager.h
         src/Container.h
         src/ImGuiManager.cpp
+        src/Axis.cpp
+        src/Axis.h
 )
 
 target_link_libraries(Minecraft SDL3::SDL3 spdlog::spdlog OpenGL::GL assimp)
