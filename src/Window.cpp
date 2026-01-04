@@ -166,8 +166,8 @@ void renderAxis() {
 }
 
 void Window::renderOpenGlData() {
-  renderAxis();
   renderGrid();
+  renderAxis();
 }
 
 void Window::render() const {
