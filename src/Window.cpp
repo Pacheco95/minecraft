@@ -128,21 +128,6 @@ void Window::dispose() {
   }
 }
 
-void Window::createImGuiWindows() {
-  // Show the demo window
-  static bool show_demo = true;
-  ImGui::ShowDemoWindow(&show_demo);
-
-  ImGui::SetNextWindowSizeConstraints(ImVec2(250, 250), ImVec2(FLT_MAX, FLT_MAX));
-  ImGui::Begin("Engine Teaks", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-  ImGui::Text("FPS: %.2f", g_imguiManager.io().Framerate);
-  ImGui::Text("Camera Active: %s", g_camera.isActive() ? "Yes" : "No");
-  ImGui::Text("Camera Pos: %.2f, %.2f, %.2f", g_camera.getPosition().x, g_camera.getPosition().y,
-              g_camera.getPosition().z);
-  ImGui::ColorEdit3("Clear Color", Config::Window::CLEAR_COLOR, ImGuiColorEditFlags_Float);
-  ImGui::End();
-}
-
 glm::mat4 getProjectionMatrix() {
   const ImGuiIO &io = g_imguiManager.io();
   const auto aspectRatio = io.DisplaySize.x / io.DisplaySize.y;
@@ -188,10 +173,6 @@ void Window::render() const {
   g_camera.update();
 
   g_imguiManager.newFrame();
-
-  createImGuiWindows();
-
-  // Rendering
   g_imguiManager.populateFrame();
 
   auto [width, height] = g_imguiManager.io().DisplaySize;

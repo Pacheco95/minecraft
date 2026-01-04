@@ -6,8 +6,9 @@ namespace App {
 
 Camera::Camera(const glm::vec3 &position)
     : m_position(position), m_front(0.0f, 0.0f, -1.0f), m_up(0.0f, 1.0f, 0.0f), m_right(0), m_worldUp(0.0f, 1.0f, 0.0f),
-      m_yaw(-90.0f), m_pitch(0.0f), m_baseSpeed(5.0f), m_speed(5.0f), m_boostMultiplier(1.5f), m_sensitivity(30.0f),
+      m_yaw(-90.0f), m_pitch(0.0f), m_baseSpeed(1.0f), m_speed(1.0f), m_boostMultiplier(3.0f), m_sensitivity(30.0f),
       m_active(false), m_mousePressed(false) {
+  lookAtOrigin();
   updateCameraVectors();
 }
 
@@ -70,6 +71,14 @@ glm::mat4 Camera::getViewMatrix() const {
 
 glm::vec3 Camera::getPosition() const {
   return m_position;
+}
+
+void Camera::lookAtOrigin() {
+  if (m_position != glm::vec3(0.0f)) {
+    const glm::vec3 dirToOrigin = glm::normalize(-m_position);
+    m_yaw = static_cast<float>(glm::degrees(atan2(dirToOrigin.z, dirToOrigin.x)));
+    m_pitch = static_cast<float>(glm::degrees(asin(dirToOrigin.y)));
+  }
 }
 
 void Camera::updateCameraVectors() {

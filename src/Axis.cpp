@@ -32,6 +32,6 @@ void Axis::setup() {
 
 void Axis::render() const {
   glBindVertexArray(m_VAO);
-  glLineWidth(3.0f);
+  glLineWidth(5.0f);
   glDrawArrays(GL_LINES, 0, 6);
 }

@@ -36,9 +36,9 @@ private:
   bool m_active;
   bool m_mousePressed;
 
+  void lookAtOrigin();
   void updateCameraVectors();
   void handleKeyInput();
   void updateCursorCapture() const;
 };
-
 } // namespace App
