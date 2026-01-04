@@ -7,6 +7,7 @@
 #include <glad/glad.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <assimp/postprocess.h>
 #include <spdlog/spdlog.h>
 

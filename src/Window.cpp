@@ -53,7 +53,7 @@ SDL_AppResult Window::setup() {
   const auto openGlProcedureLoader = reinterpret_cast<GLADloadproc>(SDL_GL_GetProcAddress);
 
   if (!gladLoadGLLoader(openGlProcedureLoader)) {
-    logger->critical("Couldn't initialize GLAD");
+    SPDLOG_CRITICAL("Couldn't initialize GLAD");
     return SDL_APP_FAILURE;
   }
 
@@ -155,7 +155,7 @@ void Window::renderOpenGlData() {
 
   FloorGrid::render(view, projection);
 
-  model = glm::rotate(model, SDL_GetTicks() / 1000.f, glm::vec3(0.5f, 0.5f, 0.0f));
+  model = glm::rotate(model, static_cast<float>(SDL_GetTicks()) / 1000.f, glm::vec3(0.5f, 0.5f, 0.0f));
 
   materialShader->set("u_model", model);
   materialShader->set("u_view", view);

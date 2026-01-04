@@ -88,8 +88,8 @@ FetchContent_MakeAvailable(stb)
 # ========================= END DEPENDENCIES   =========================
 
 add_executable(Minecraft
-        src/glad.c
-        src/ImageLoader.cpp
+        src/vendor/glad.c
+        src/vendor/ImageLoader.cpp
         src/main.cpp
         src/Config.h
 
