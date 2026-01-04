@@ -14,3 +14,4 @@ run:
 
 format:
 	@find src -type f -regex ".*\.\(h\|c\|hpp\|cpp\)$$" | xargs clang-format -i
+	@find resources/shaders -type f -regex ".*\.\(frag\|vert\)$$" | xargs clang-format -i

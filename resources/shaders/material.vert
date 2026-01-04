@@ -14,8 +14,8 @@ out vec4 v_color;
 out vec2 v_tex_coord;
 
 void main() {
-    gl_Position = u_projection * u_view * u_model * vec4(in_pos, 1.0);
-    v_normal = mat3(transpose(inverse(u_model))) * in_normal;
-    v_color = in_color;
-    v_tex_coord = in_tex_coord;
+  gl_Position = u_projection * u_view * u_model * vec4(in_pos, 1.0);
+  v_normal = mat3(transpose(inverse(u_model))) * in_normal;
+  v_color = in_color;
+  v_tex_coord = in_tex_coord;
 }
