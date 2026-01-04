@@ -135,16 +135,14 @@ glm::mat4 getProjectionMatrix() {
 
 void render3DModel() {
   const Shader &materialShader = *g_shaderCache.get("material");
+  materialShader.use();
 
-  auto model = glm::mat4(1.0f);
+  // model = glm::rotate(model, static_cast<float>(SDL_GetTicks()) / 1000.f, glm::vec3(0.5f, 0.5f, 0.0f));
 
-  model = glm::rotate(model, static_cast<float>(SDL_GetTicks()) / 1000.f, glm::vec3(0.5f, 0.5f, 0.0f));
-
-  materialShader.set("u_model", model);
+  materialShader.set("u_model", glm::mat4(1.0f));
   materialShader.set("u_view", g_camera.getViewMatrix());
   materialShader.set("u_projection", getProjectionMatrix());
 
-  materialShader.use();
   model3d.render();
 }
 
@@ -166,6 +164,7 @@ void renderAxis() {
 void Window::renderOpenGlData() {
   renderGrid();
   renderAxis();
+  render3DModel();
 }
 
 void Window::render() const {
