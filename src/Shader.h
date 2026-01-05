@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Cache.h"
-
 #include <string>
+#include <unordered_map>
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -83,7 +82,7 @@ public:
 private:
   static void checkCompileErrors(GLuint shader, ShaderType type);
   static uint compile(const std::string &code, ShaderType type);
-  Cache<std::string, GLint> m_uniformLocations{};
+  std::unordered_map<std::string, GLint> m_uniformLocations{};
 
   GLint getUniformLocation(const std::string &name);
 };

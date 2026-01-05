@@ -88,13 +88,13 @@ uint Shader::compile(const std::string &code, const ShaderType type) {
 }
 
 GLint Shader::getUniformLocation(const std::string &name) {
-  if (const auto locationPtr = m_uniformLocations.get(name); locationPtr != nullptr) {
-    return *locationPtr;
+  if (const auto locationPtr = m_uniformLocations.find(name); locationPtr != m_uniformLocations.end()) {
+    return locationPtr->second;
   }
 
   const GLint location = glGetUniformLocation(ID, name.c_str());
 
-  m_uniformLocations.set(name, location);
+  m_uniformLocations.insert({name, location});
   return location;
 }
 
