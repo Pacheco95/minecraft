@@ -97,8 +97,6 @@ add_executable(Minecraft
         src/Window.cpp
         src/Shader.h
         src/Shader.cpp
-        src/ShaderCache.h
-        src/ShaderCache.cpp
         src/Model.h
         src/Model.cpp
         src/Texture2D.h
@@ -114,8 +112,8 @@ add_executable(Minecraft
         src/ImGuiManager.cpp
         src/Axis.cpp
         src/Axis.h
-        src/TextureCache.cpp
-        src/TextureCache.h
+        src/MapUtils.h
+        src/Cache.h
 )
 
 target_link_libraries(Minecraft SDL3::SDL3 spdlog::spdlog OpenGL::GL assimp)

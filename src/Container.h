@@ -1,16 +1,15 @@
 #pragma once
 
-#include "Axis.h"
-
 #include <memory>
 
 #include "ImGuiManager.h"
-#include "ShaderCache.h"
 #include "Time.h"
 #include "Window.h"
 #include "Camera.h"
 #include "FloorGrid.h"
-#include "TextureCache.h"
+#include "Texture2D.h"
+#include "Axis.h"
+#include "Cache.h"
 
 namespace App {
 class Container {
@@ -18,11 +17,11 @@ public:
   std::shared_ptr<Window> m_window = nullptr;
   std::shared_ptr<ImGuiManager> m_imguiManager = nullptr;
   std::shared_ptr<Time> m_time = nullptr;
-  std::shared_ptr<ShaderCache> m_shaderCache = nullptr;
+  std::shared_ptr<Cache<std::string, Shader>> m_shaderCache = nullptr;
   std::shared_ptr<Camera> m_camera = nullptr;
   std::shared_ptr<FloorGrid> m_floorGrid = nullptr;
   std::shared_ptr<Axis> m_axis = nullptr;
-  std::shared_ptr<TextureCache> m_textureCache = nullptr;
+  std::shared_ptr<Cache<std::string, Texture2D>> m_textureCache = nullptr;
 
   Container(const Container &) = delete;
   Container &operator=(const Container &) = delete;
@@ -39,11 +38,11 @@ public:
     m_window = std::make_shared<Window>();
     m_imguiManager = std::make_shared<ImGuiManager>();
     m_time = std::make_shared<Time>();
-    m_shaderCache = std::make_shared<ShaderCache>();
+    m_shaderCache = std::make_shared<Cache<std::string, Shader>>();
     m_camera = std::make_shared<Camera>(glm::vec3(4.0f, 2.0f, 4.0f));
     m_floorGrid = std::make_shared<FloorGrid>();
     m_axis = std::make_shared<Axis>();
-    m_textureCache = std::make_shared<TextureCache>();
+    m_textureCache = std::make_shared<Cache<std::string, Texture2D>>();
   }
 
   void dispose() {
