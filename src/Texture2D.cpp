@@ -15,7 +15,7 @@ Texture2D::~Texture2D() {
   free();
 }
 
-void Texture2D::load() {
+void Texture2D::load(const TextureIndex textureIndex) {
   if (m_id) {
     return;
   }
@@ -33,6 +33,7 @@ void Texture2D::load() {
   }
 
   glGenTextures(1, &m_id);
+  glActiveTexture(GL_TEXTURE0 + textureIndex);
   glBindTexture(GL_TEXTURE_2D, m_id);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

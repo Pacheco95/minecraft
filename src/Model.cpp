@@ -238,29 +238,41 @@ Material Model::processMaterial(const aiMaterial *aiMaterial) const {
   aiMaterial->Get(AI_MATKEY_SHININESS, shininess);
   material.shininess = shininess;
 
+  std::unordered_set<aiTextureType> textureTypes{};
+
+  for (auto i = static_cast<unsigned>(aiTextureType_NONE);
+       i < static_cast<unsigned>(aiTextureType_GLTF_METALLIC_ROUGHNESS); ++i) {
+
+    const auto textureType = static_cast<aiTextureType>(i);
+
+    if (const auto count = aiMaterial->GetTextureCount(textureType); count > 0) {
+      textureTypes.insert(textureType);
+    }
+  }
+
   // Get texture paths
   aiString texPath;
 
   // Diffuse texture
-  if (aiMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
+  if (textureTypes.contains(aiTextureType_DIFFUSE)) {
     aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &texPath);
     material.diffuseTexture = g_textureCache.get(modelDirectory + "/" + texPath.C_Str());
-    material.diffuseTexture->load();
+    material.diffuseTexture->load(DIFFUSE);
   }
 
-  // // Normal texture
-  // if (aiMaterial->GetTextureCount(aiTextureType_HEIGHT) > 0) {
-  //   aiMaterial->GetTexture(aiTextureType_HEIGHT, 0, &texPath);
-  //   material.normalTexture = g_textureCache.get(modelDirectory + "/" + texPath.C_Str());
-  //   material.normalTexture->load();
-  // }
-  //
-  // // Specular texture
-  // if (aiMaterial->GetTextureCount(aiTextureType_SPECULAR) > 0) {
-  //   aiMaterial->GetTexture(aiTextureType_SPECULAR, 0, &texPath);
-  //   material.specularTexture = g_textureCache.get(modelDirectory + "/" + texPath.C_Str());
-  //   material.specularTexture->load();
-  // }
+  // Normal texture
+  if (textureTypes.contains(aiTextureType_HEIGHT)) {
+    aiMaterial->GetTexture(aiTextureType_HEIGHT, 0, &texPath);
+    material.normalTexture = g_textureCache.get(modelDirectory + "/" + texPath.C_Str());
+    material.normalTexture->load(HEIGHT);
+  }
+
+  // Specular texture
+  if (textureTypes.contains(aiTextureType_SPECULAR)) {
+    aiMaterial->GetTexture(aiTextureType_SPECULAR, 0, &texPath);
+    material.specularTexture = g_textureCache.get(modelDirectory + "/" + texPath.C_Str());
+    material.specularTexture->load(SPECULAR);
+  }
 
   return material;
 }

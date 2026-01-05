@@ -139,9 +139,9 @@ void render3DModel() {
 
   // model = glm::rotate(model, static_cast<float>(SDL_GetTicks()) / 1000.f, glm::vec3(0.5f, 0.5f, 0.0f));
 
-  materialShader.set("u_model", glm::mat4(1.0f));
-  materialShader.set("u_view", g_camera.getViewMatrix());
-  materialShader.set("u_projection", getProjectionMatrix());
+  materialShader.set("uModel", glm::mat4(1.0f));
+  materialShader.set("uView", g_camera.getViewMatrix());
+  materialShader.set("uProjection", getProjectionMatrix());
 
   model3d.render();
 }
