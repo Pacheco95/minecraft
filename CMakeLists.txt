@@ -114,6 +114,8 @@ add_executable(Minecraft
         src/ImGuiManager.cpp
         src/Axis.cpp
         src/Axis.h
+        src/TextureCache.cpp
+        src/TextureCache.h
 )
 
 target_link_libraries(Minecraft SDL3::SDL3 spdlog::spdlog OpenGL::GL assimp)

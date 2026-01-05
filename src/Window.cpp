@@ -72,7 +72,7 @@ SDL_AppResult Window::setup() {
 
   SPDLOG_INFO("SDL and OpenGL initialized successfully");
 
-  model3d.load("resources/models/cube/cube.obj");
+  model3d.load("resources/models/backpack/backpack.obj");
   model3d.setupAllBuffers();
 
   g_camera.setActive(false);

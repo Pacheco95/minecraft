@@ -10,12 +10,10 @@ public:
   void load();
   [[nodiscard]] unsigned int getId() const;
   [[nodiscard]] const std::string &getPath() const;
-  [[nodiscard]] bool isLoaded() const;
 
 private:
   unsigned int m_id;
   std::string m_path;
-  bool m_isLoaded;
 
   void free() const;
 };

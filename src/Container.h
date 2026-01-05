@@ -10,6 +10,7 @@
 #include "Window.h"
 #include "Camera.h"
 #include "FloorGrid.h"
+#include "TextureCache.h"
 
 namespace App {
 class Container {
@@ -21,6 +22,7 @@ public:
   std::shared_ptr<Camera> m_camera = nullptr;
   std::shared_ptr<FloorGrid> m_floorGrid = nullptr;
   std::shared_ptr<Axis> m_axis = nullptr;
+  std::shared_ptr<TextureCache> m_textureCache = nullptr;
 
   Container(const Container &) = delete;
   Container &operator=(const Container &) = delete;
@@ -41,6 +43,7 @@ public:
     m_camera = std::make_shared<Camera>(glm::vec3(4.0f, 2.0f, 4.0f));
     m_floorGrid = std::make_shared<FloorGrid>();
     m_axis = std::make_shared<Axis>();
+    m_textureCache = std::make_shared<TextureCache>();
   }
 
   void dispose() {
@@ -69,3 +72,4 @@ inline const App::Container &container = App::Container::getInstance();
 #define g_camera (*container.m_camera)
 #define g_floorGrid (*container.m_floorGrid)
 #define g_axis (*container.m_axis)
+#define g_textureCache (*container.m_textureCache)

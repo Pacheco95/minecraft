@@ -1,5 +1,7 @@
 #define SDL_MAIN_USE_CALLBACKS 1
 
+#include <stb_image.h>
+
 #include <spdlog/spdlog.h>
 
 #include <SDL3/SDL.h>
@@ -11,6 +13,7 @@ using namespace App;
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
   spdlog::set_level(spdlog::level::trace);
+  stbi_set_flip_vertically_on_load(true);
   g_container.init();
   return g_window.setup();
 }

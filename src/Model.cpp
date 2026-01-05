@@ -1,8 +1,10 @@
 #include "Model.h"
 
+#include <filesystem>
+
 #include <stb_image.h>
 
-#include <filesystem>
+#include "Container.h"
 
 namespace App {
 
@@ -55,8 +57,6 @@ void Mesh::setupBuffers() {
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-  SPDLOG_DEBUG("Mesh buffers setup: VAO={}, VBO={}, EBO={}", VAO, VBO, EBO);
 }
 
 void Mesh::render() const {
@@ -244,28 +244,23 @@ Material Model::processMaterial(const aiMaterial *aiMaterial) const {
   // Diffuse texture
   if (aiMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
     aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &texPath);
-    material.diffuseTexture = std::make_shared<Texture2D>(modelDirectory + "/" + texPath.C_Str());
+    material.diffuseTexture = g_textureCache.get(modelDirectory + "/" + texPath.C_Str());
     material.diffuseTexture->load();
   }
 
-  // Normal texture
-  if (aiMaterial->GetTextureCount(aiTextureType_HEIGHT) > 0) {
-    aiMaterial->GetTexture(aiTextureType_HEIGHT, 0, &texPath);
-    material.normalTexture = std::make_shared<Texture2D>(modelDirectory + "/" + texPath.C_Str());
-    material.normalTexture->load();
-  }
-
-  // Specular texture
-  if (aiMaterial->GetTextureCount(aiTextureType_SPECULAR) > 0) {
-    aiMaterial->GetTexture(aiTextureType_SPECULAR, 0, &texPath);
-    material.specularTexture = std::make_shared<Texture2D>(modelDirectory + "/" + texPath.C_Str());
-    material.specularTexture->load();
-  }
-
-  SPDLOG_DEBUG("Processed material: diffuse=({}, {}, {}), ambient=({}, {}, {}), "
-               "specular=({}, {}, {}), shininess={}",
-               material.diffuse.x, material.diffuse.y, material.diffuse.z, material.ambient.x, material.ambient.y,
-               material.ambient.z, material.specular.x, material.specular.y, material.specular.z, material.shininess);
+  // // Normal texture
+  // if (aiMaterial->GetTextureCount(aiTextureType_HEIGHT) > 0) {
+  //   aiMaterial->GetTexture(aiTextureType_HEIGHT, 0, &texPath);
+  //   material.normalTexture = g_textureCache.get(modelDirectory + "/" + texPath.C_Str());
+  //   material.normalTexture->load();
+  // }
+  //
+  // // Specular texture
+  // if (aiMaterial->GetTextureCount(aiTextureType_SPECULAR) > 0) {
+  //   aiMaterial->GetTexture(aiTextureType_SPECULAR, 0, &texPath);
+  //   material.specularTexture = g_textureCache.get(modelDirectory + "/" + texPath.C_Str());
+  //   material.specularTexture->load();
+  // }
 
   return material;
 }

@@ -8,7 +8,7 @@
 
 #include <stb_image.h>
 
-Texture2D::Texture2D(std::string path) : m_id(0), m_path(std::move(path)), m_isLoaded(false) {
+Texture2D::Texture2D(std::string path) : m_id(0), m_path(std::move(path)) {
 }
 
 Texture2D::~Texture2D() {
@@ -16,9 +16,8 @@ Texture2D::~Texture2D() {
 }
 
 void Texture2D::load() {
-  if (m_isLoaded) {
-    SPDLOG_WARN("Trying to reload texture: {}", m_path);
-    free();
+  if (m_id) {
+    return;
   }
 
   if (!std::filesystem::exists(m_path)) {
@@ -69,12 +68,8 @@ const std::string &Texture2D::getPath() const {
   return m_path;
 }
 
-bool Texture2D::isLoaded() const {
-  return m_isLoaded;
-}
-
 void Texture2D::free() const {
-  if (m_id && m_isLoaded) {
+  if (m_id) {
     glad_glDeleteTextures(1, &m_id);
   }
 }
