@@ -7,6 +7,7 @@
 #include "Container.h"
 #include "Model.h"
 #include "Config.h"
+#include "DummyVAO.h"
 
 namespace App {
 
@@ -161,10 +162,19 @@ void renderAxis() {
   g_axis.render();
 }
 
+void renderDummyVAO() {
+  Shader &shader = *g_shaderCache.get("dummy_vao");
+  shader.use();
+  shader.set("uTime", static_cast<float>(SDL_GetTicks()) / 1000.0f);
+  const DummyVAO dummyVAO;
+  dummyVAO.render();
+}
+
 void Window::renderOpenGlData() {
   renderGrid();
   renderAxis();
   render3DModel();
+  renderDummyVAO();
 }
 
 void Window::render() const {
