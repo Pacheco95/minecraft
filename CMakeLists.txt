@@ -116,6 +116,7 @@ add_executable(Minecraft
         src/Axis.h
         src/TextureCache.cpp
         src/TextureCache.h
+        src/Cache.h
 )
 
 target_link_libraries(Minecraft SDL3::SDL3 spdlog::spdlog OpenGL::GL assimp)

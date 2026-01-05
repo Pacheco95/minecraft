@@ -134,7 +134,7 @@ glm::mat4 getProjectionMatrix() {
 }
 
 void render3DModel() {
-  const Shader &materialShader = *g_shaderCache.get("material");
+  Shader &materialShader = *g_shaderCache.get("material");
   materialShader.use();
 
   // model = glm::rotate(model, static_cast<float>(SDL_GetTicks()) / 1000.f, glm::vec3(0.5f, 0.5f, 0.0f));
@@ -153,7 +153,7 @@ void renderGrid() {
 }
 
 void renderAxis() {
-  const Shader &axisShader = *g_shaderCache.get("axis");
+  Shader &axisShader = *g_shaderCache.get("axis");
   axisShader.use();
   axisShader.set("uModel", glm::scale(glm::mat4(1.0f), 1.f * glm::vec3(1)));
   axisShader.set("uView", g_camera.getViewMatrix());

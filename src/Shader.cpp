@@ -87,4 +87,15 @@ uint Shader::compile(const std::string &code, const ShaderType type) {
   return shaderId;
 }
 
+GLint Shader::getUniformLocation(const std::string &name) {
+  if (const auto locationPtr = m_uniformLocations.get(name); locationPtr != nullptr) {
+    return *locationPtr;
+  }
+
+  const GLint location = glGetUniformLocation(ID, name.c_str());
+
+  m_uniformLocations.set(name, location);
+  return location;
+}
+
 } // namespace App
