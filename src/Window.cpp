@@ -166,7 +166,7 @@ void renderDummyVAO() {
   static int frame = 0;
   frame++;
 
-  Shader &shader = *g_shaderCache.get("dummy_vao");
+  Shader &shader = *g_shaderCache.get("dummy_vao.vert", "ocean.frag");
   shader.use();
   auto [width, height] = g_imguiManager.io().DisplaySize;
   glm::vec4 mouse;
@@ -192,7 +192,7 @@ void Window::renderOpenGlData() {
   renderGrid();
   renderAxis();
   render3DModel();
-  // renderDummyVAO();
+  renderDummyVAO();
 }
 
 void Window::render() const {

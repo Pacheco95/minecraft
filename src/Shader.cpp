@@ -51,6 +51,10 @@ Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) {
   glDeleteShader(fragment);
 }
 
+Shader::Shader(const char *const vertexName, const char *const fragmentName)
+    : Shader(std::string(SHADER_PATH) + vertexName, std::string(SHADER_PATH) + fragmentName) {
+}
+
 Shader::~Shader() {
   glDeleteProgram(ID);
 }

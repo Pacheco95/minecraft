@@ -4,17 +4,16 @@
 #include <sstream>
 #include <string>
 
-constexpr auto sep = "_";
+constexpr auto sep = " ";
 
 template <class T> class Cache {
 public:
   template <class... CtorArgs> std::shared_ptr<T> &get(CtorArgs... args) {
     std::ostringstream oss;
-    bool first = true;
 
-    ((oss << (first ? "" : sep) << args, first = false), ...);
+    ((oss << sep << args), ...);
 
-    const std::string key = std::string(typeid(T).name()) + sep + oss.str();
+    const std::string key = std::string(typeid(T).name()) + oss.str();
 
     if (const auto entry = m_cache.find(key); entry != m_cache.end()) {
       return entry->second;

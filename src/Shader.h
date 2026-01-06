@@ -22,8 +22,8 @@ public:
   unsigned int ID;
 
   explicit Shader(const std::string &name);
-
   Shader(const std::string &vertexPath, const std::string &fragmentPath);
+  Shader(const char *vertexName, const char *fragmentName);
 
   ~Shader();
 
