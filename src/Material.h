@@ -14,8 +14,12 @@ public:
   void bindTextures() const;
   void applyUniforms() const;
 
-  void setFloat(const std::string& name, const float value) { floatUniforms[name] = value; }
-  void setVec3(const std::string& name, const glm::vec3& value) { vec3Uniforms[name] = value; }
+  void setFloat(const std::string &name, const float value) {
+    floatUniforms[name] = value;
+  }
+  void setVec3(const std::string &name, const glm::vec3 &value) {
+    vec3Uniforms[name] = value;
+  }
 
 private:
   std::shared_ptr<App::Shader> shader;
