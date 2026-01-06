@@ -163,9 +163,27 @@ void renderAxis() {
 }
 
 void renderDummyVAO() {
+  static int frame = 0;
+  frame++;
+
   Shader &shader = *g_shaderCache.get("dummy_vao");
   shader.use();
-  shader.set("uTime", static_cast<float>(SDL_GetTicks()) / 1000.0f);
+  auto [width, height] = g_imguiManager.io().DisplaySize;
+  glm::vec4 mouse;
+  const Uint32 buttons = SDL_GetMouseState(&mouse.x, &mouse.y);
+
+  if (buttons & SDL_BUTTON_LMASK) {
+    mouse.z = 1.0;
+  }
+
+  if (buttons & SDL_BUTTON_RMASK) {
+    mouse.w = 1.0;
+  }
+
+  shader.set("iTime", static_cast<float>(SDL_GetTicks()) / 1000.0f);
+  shader.set("iFrame", frame);
+  shader.set("iResolution", glm::vec2(width, height));
+  shader.set("iMouse", mouse);
   const DummyVAO dummyVAO;
   dummyVAO.render();
 }
@@ -174,7 +192,7 @@ void Window::renderOpenGlData() {
   renderGrid();
   renderAxis();
   render3DModel();
-  renderDummyVAO();
+  // renderDummyVAO();
 }
 
 void Window::render() const {
