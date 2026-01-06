@@ -5,7 +5,6 @@
 
 #include <glad/glad.h>
 #include <spdlog/spdlog.h>
-
 #include <stb_image.h>
 
 Texture2D::Texture2D(std::string path) : m_id(0), m_path(std::move(path)) {
@@ -15,7 +14,7 @@ Texture2D::~Texture2D() {
   free();
 }
 
-void Texture2D::load(const TextureIndex textureIndex) {
+void Texture2D::load() {
   if (m_id) {
     return;
   }
@@ -33,8 +32,8 @@ void Texture2D::load(const TextureIndex textureIndex) {
   }
 
   glGenTextures(1, &m_id);
-  glActiveTexture(GL_TEXTURE0 + textureIndex);
-  glBindTexture(GL_TEXTURE_2D, m_id);
+
+  bind();
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -61,16 +60,12 @@ void Texture2D::load(const TextureIndex textureIndex) {
   SPDLOG_DEBUG(logMessage, m_path, width, height, channels, m_id);
 }
 
-unsigned int Texture2D::getId() const {
-  return m_id;
-}
-
-const std::string &Texture2D::getPath() const {
-  return m_path;
+void Texture2D::bind() const {
+  glBindTexture(GL_TEXTURE_2D, m_id);
 }
 
 void Texture2D::free() const {
   if (m_id) {
-    glad_glDeleteTextures(1, &m_id);
+    glDeleteTextures(1, &m_id);
   }
 }

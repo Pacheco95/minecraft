@@ -1,280 +1,29 @@
 #include "Model.h"
 
-#include <filesystem>
+#include <spdlog/spdlog.h>
 
-#include <stb_image.h>
-
-#include "Container.h"
-
-namespace App {
-
-glm::vec3 aiToGlm(const aiVector3d &aiVec) {
-  return {aiVec.x, aiVec.y, aiVec.z};
+void Model::setup() {
 }
 
-glm::vec4 aiToGlm(const aiColor4D &aiVec) {
-  return {aiVec.r, aiVec.g, aiVec.b, aiVec.a};
-}
+void Model::render(const RenderContext &ctx) {
+  for (auto &[mesh, material] : meshGroups) {
+    if (!mesh || !material) {
+      SPDLOG_WARN("Empty mesh or material");
+    };
 
-void Mesh::setupBuffers() {
-  if (vertices.empty() || indices.empty()) {
-    SPDLOG_WARN("Cannot setup buffers for empty mesh");
-    return;
-  }
+    // 1. Prepare the Shader (stored in the material)
+    const std::shared_ptr<App::Shader> shader = material->getShader();
+    shader->use();
 
-  // Generate and bind VAO
-  glGenVertexArrays(1, &VAO);
-  glBindVertexArray(VAO);
+    // 2. Set Transformation Uniforms
+    shader->set("projection", ctx.projectionMatrix);
+    shader->set("view", ctx.viewMatrix);
+    shader->set("model", ctx.modelMatrix);
 
-  // Create and bind VBO
-  glGenBuffers(1, &VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+    // 3. Bind Textures from the Material
+    material->bindTextures();
 
-  // Create and bind EBO
-  glGenBuffers(1, &EBO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
-
-  // Setup vertex attributes
-  // Position (location 0)
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, position));
-
-  // Normal (location 1)
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, normal));
-
-  // Color (location 2)
-  glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, color));
-
-  // Texture Coordinates (location 3)
-  glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, texCoords));
-
-  // Unbind VAO
-  glBindVertexArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-}
-
-void Mesh::render() const {
-  if (VAO == 0) {
-    SPDLOG_WARN("Mesh not initialized, call setupBuffers() first");
-    return;
-  }
-
-  glBindVertexArray(VAO);
-  glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
-  glBindVertexArray(0);
-}
-
-void Mesh::cleanup() {
-  if (VAO != 0) {
-    glDeleteVertexArrays(1, &VAO);
-  }
-
-  if (VBO != 0) {
-    glDeleteBuffers(1, &VBO);
-  }
-
-  if (EBO != 0) {
-    glDeleteBuffers(1, &EBO);
-  }
-
-  VAO = VBO = EBO = 0;
-}
-
-Model::~Model() {
-  cleanup();
-}
-
-void Model::load(const std::string &filePath) {
-  cleanup();
-
-  // Store the directory path for relative texture paths
-  modelDirectory = std::filesystem::path(filePath).parent_path().string();
-
-  Assimp::Importer importer;
-
-  const aiScene *scene =
-      importer.ReadFile(filePath,
-                        aiProcess_Triangulate |             // Ensure all meshes are triangulated
-                            aiProcess_GenNormals |          // Generate normals if not present
-                            aiProcess_FlipUVs |             // Flip UVs for OpenGL
-                            aiProcess_CalcTangentSpace |    // Calculate tangent space for normal mapping
-                            aiProcess_JoinIdenticalVertices // Join identical vertices
-      );
-
-  if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-    SPDLOG_ERROR("Failed to load model: {} - {}", filePath, importer.GetErrorString());
-    return;
-  }
-
-  if (scene->mNumMeshes == 0) {
-    SPDLOG_WARN("Model file {} contains no meshes", filePath);
-    return;
-  }
-
-  SPDLOG_INFO("Loading model: {} with {} meshes", filePath, scene->mNumMeshes);
-  processNode(scene->mRootNode, scene);
-  SPDLOG_INFO("Successfully loaded model with {} meshes", meshes.size());
-}
-
-void Model::setupAllBuffers() {
-  for (auto &mesh : meshes) {
-    mesh.setupBuffers();
-  }
-  SPDLOG_INFO("Setup buffers for {} meshes", meshes.size());
-}
-
-void Model::render() const {
-  for (const auto &mesh : meshes) {
-    mesh.render();
+    // 4. Draw the Mesh
+    mesh->render();
   }
 }
-
-bool Model::isLoaded() const {
-  return !meshes.empty();
-}
-
-void Model::cleanup() {
-  // Textures are cleared by Texture2D class destructor
-  meshes.clear();
-}
-
-void Model::processNode(const aiNode *node, const aiScene *scene) {
-  // Process all meshes at this node
-  for (unsigned int i = 0; i < node->mNumMeshes; ++i) {
-    aiMesh *aiMesh = scene->mMeshes[node->mMeshes[i]];
-    processMesh(aiMesh, scene);
-  }
-
-  // Recursively process child nodes
-  for (unsigned int i = 0; i < node->mNumChildren; ++i) {
-    processNode(node->mChildren[i], scene);
-  }
-}
-
-void Model::processMesh(aiMesh *aiMesh, const aiScene *scene) {
-  Mesh mesh;
-
-  // Process vertices
-  mesh.vertices.reserve(aiMesh->mNumVertices);
-
-  for (unsigned int i = 0; i < aiMesh->mNumVertices; ++i) {
-    Vertex vertex{};
-
-    // Position
-    vertex.position = aiToGlm(aiMesh->mVertices[i]);
-
-    // Normal (should be generated by aiProcess_GenNormals if not present)
-    if (aiMesh->HasNormals()) {
-      vertex.normal = aiToGlm(aiMesh->mNormals[i]);
-    } else {
-      vertex.normal = glm::vec3(0.0f, 0.0f, 1.0f);
-    }
-
-    // Color (if available, otherwise white)
-    if (aiMesh->HasVertexColors(0)) {
-      vertex.color = aiToGlm(aiMesh->mColors[0][i]);
-    } else {
-      vertex.color = glm::vec3(1.0f);
-    }
-
-    // Texture Coordinates
-    if (aiMesh->HasTextureCoords(0)) {
-      vertex.texCoords = aiToGlm(aiMesh->mTextureCoords[0][i]);
-    } else {
-      vertex.texCoords = glm::vec2(0.0f);
-    }
-
-    mesh.vertices.emplace_back(vertex);
-  }
-
-  // Process indices (faces)
-  mesh.indices.reserve(aiMesh->mNumFaces * 3); // Assuming triangles
-
-  for (unsigned int i = 0; i < aiMesh->mNumFaces; ++i) {
-    aiFace face = aiMesh->mFaces[i];
-
-    if (face.mNumIndices != 3) {
-      SPDLOG_WARN("Face has {} indices instead of 3 (should be triangulated)", face.mNumIndices);
-    }
-
-    for (unsigned int j = 0; j < face.mNumIndices; ++j) {
-      mesh.indices.push_back(face.mIndices[j]);
-    }
-  }
-
-  // Process material
-  aiMaterial *aiMat = scene->mMaterials[aiMesh->mMaterialIndex];
-  mesh.material = processMaterial(aiMat);
-
-  meshes.emplace_back(mesh);
-}
-
-Material Model::processMaterial(const aiMaterial *aiMaterial) const {
-  Material material;
-
-  // Get diffuse color
-  aiColor3D diffuse(0.0f, 0.0f, 0.0f);
-  aiMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
-  material.diffuse = glm::vec3(diffuse.r, diffuse.g, diffuse.b);
-
-  // Get ambient color
-  aiColor3D ambient(0.0f, 0.0f, 0.0f);
-  aiMaterial->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
-  material.ambient = glm::vec3(ambient.r, ambient.g, ambient.b);
-
-  // Get specular color
-  aiColor3D specular(0.5f, 0.5f, 0.5f);
-  aiMaterial->Get(AI_MATKEY_COLOR_SPECULAR, specular);
-  material.specular = glm::vec3(specular.r, specular.g, specular.b);
-
-  // Get shininess
-  float shininess = 32.0f;
-  aiMaterial->Get(AI_MATKEY_SHININESS, shininess);
-  material.shininess = shininess;
-
-  std::unordered_set<aiTextureType> textureTypes{};
-
-  for (auto i = static_cast<unsigned>(aiTextureType_NONE);
-       i < static_cast<unsigned>(aiTextureType_GLTF_METALLIC_ROUGHNESS); ++i) {
-
-    const auto textureType = static_cast<aiTextureType>(i);
-
-    if (const auto count = aiMaterial->GetTextureCount(textureType); count > 0) {
-      textureTypes.insert(textureType);
-    }
-  }
-
-  // Get texture paths
-  aiString texPath;
-
-  // Diffuse texture
-  if (textureTypes.contains(aiTextureType_DIFFUSE)) {
-    aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &texPath);
-    material.diffuseTexture = g_textureCache.get(modelDirectory + "/" + texPath.C_Str());
-    material.diffuseTexture->load(DIFFUSE);
-  }
-
-  // Normal texture
-  if (textureTypes.contains(aiTextureType_HEIGHT)) {
-    aiMaterial->GetTexture(aiTextureType_HEIGHT, 0, &texPath);
-    material.normalTexture = g_textureCache.get(modelDirectory + "/" + texPath.C_Str());
-    material.normalTexture->load(HEIGHT);
-  }
-
-  // Specular texture
-  if (textureTypes.contains(aiTextureType_SPECULAR)) {
-    aiMaterial->GetTexture(aiTextureType_SPECULAR, 0, &texPath);
-    material.specularTexture = g_textureCache.get(modelDirectory + "/" + texPath.C_Str());
-    material.specularTexture->load(SPECULAR);
-  }
-
-  return material;
-}
-
-} // namespace App

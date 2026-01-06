@@ -97,8 +97,8 @@ add_executable(Minecraft
         src/Window.cpp
         src/Shader.h
         src/Shader.cpp
-        src/Model.h
-        src/Model.cpp
+        src/OldModel.h
+        src/OldModel.cpp
         src/Texture2D.h
         src/Texture2D.cpp
         src/Camera.h
@@ -118,6 +118,14 @@ add_executable(Minecraft
         src/Renderable.h
         src/Transform.cpp
         src/Transform.h
+        src/Material.cpp
+        src/Material.h
+        src/Mesh.cpp
+        src/Mesh.h
+        src/Model.cpp
+        src/Model.h
+        src/GameObject.cpp
+        src/GameObject.h
 )
 
 target_link_libraries(Minecraft SDL3::SDL3 spdlog::spdlog OpenGL::GL assimp)

@@ -1,8 +1,9 @@
 #pragma once
 
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 
 struct RenderContext {
+  const glm::mat4 &modelMatrix;
   const glm::mat4 &viewMatrix;
   const glm::mat4 &projectionMatrix;
 };

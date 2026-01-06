@@ -5,13 +5,13 @@
 #include <imgui.h>
 
 #include "Container.h"
-#include "Model.h"
+#include "OldModel.h"
 #include "Config.h"
 #include "DummyVAO.h"
 
 namespace App {
 
-Model model3d;
+OldModel model3d;
 
 SDL_AppResult Window::setup() {
   SDL_SetAppMetadata("Minecraft", "0.1.0", "com.example.minecraft");
