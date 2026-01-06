@@ -5,15 +5,30 @@
 #include <glm/glm.hpp>
 #include <glad/glad.h>
 
+// 1 Single source of truth
+#define VERTEX_FIELDS(X)                                                                                               \
+  X(glm::vec3, position)                                                                                               \
+  X(glm::vec4, color)                                                                                                  \
+  X(glm::vec3, normal)                                                                                                 \
+  X(glm::vec2, uv)                                                                                                     \
+  X(glm::vec3, tangent)                                                                                                \
+  X(glm::vec3, bitangent)
+
+// 2 Struct generation
 struct Vertex {
-  glm::vec3 position;
-  glm::vec4 color; // RGBA
-  glm::vec3 normal;
-  glm::vec2 uv;
-  glm::vec3 tangent;
-  glm::vec3 bitangent;
-  // Which other fields are relevant?
+#define X(type, name) type name;
+  VERTEX_FIELDS(X)
+#undef X
 };
+
+// 3 Enum generation (same order)
+enum VertexAttributeIndex {
+#define X(type, name) name##AttrIndex,
+  VERTEX_FIELDS(X)
+#undef X
+};
+
+#undef VERTEX_FIELDS
 
 class Mesh {
 public:

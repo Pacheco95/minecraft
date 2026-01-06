@@ -12,29 +12,23 @@ void Mesh::setup() {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
-  // 1. Position (3 floats)
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
+  glEnableVertexAttribArray(positionAttrIndex);
+  glVertexAttribPointer(positionAttrIndex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
 
-  // 2. Color (4 floats)
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, color));
+  glEnableVertexAttribArray(colorAttrIndex);
+  glVertexAttribPointer(colorAttrIndex, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, color));
 
-  // 3. Normal (3 floats)
-  glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, normal));
+  glEnableVertexAttribArray(normalAttrIndex);
+  glVertexAttribPointer(normalAttrIndex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, normal));
 
-  // 4. UV (2 floats)
-  glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, uv));
+  glEnableVertexAttribArray(uvAttrIndex);
+  glVertexAttribPointer(uvAttrIndex, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, uv));
 
-  // 5. Tangent (3 floats)
-  glEnableVertexAttribArray(4);
-  glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, tangent));
+  glEnableVertexAttribArray(tangentAttrIndex);
+  glVertexAttribPointer(tangentAttrIndex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, tangent));
 
-  // 6. Bitangent (3 floats)
-  glEnableVertexAttribArray(5);
-  glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, bitangent));
+  glEnableVertexAttribArray(bitangentAttrIndex);
+  glVertexAttribPointer(bitangentAttrIndex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, bitangent));
 
   glBindVertexArray(0);
 }
