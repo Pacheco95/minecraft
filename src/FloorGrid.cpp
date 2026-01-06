@@ -21,7 +21,7 @@ FloorGrid::~FloorGrid() {
 }
 
 void FloorGrid::setup() {
-  gridShader = g_container.m_shaderCache->get("grid");
+  gridShader = g_shaderCache.get("grid");
 
   if (!gridVAO) {
     glGenVertexArrays(1, &gridVAO);

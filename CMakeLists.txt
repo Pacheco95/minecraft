@@ -112,7 +112,6 @@ add_executable(Minecraft
         src/ImGuiManager.cpp
         src/Axis.cpp
         src/Axis.h
-        src/MapUtils.h
         src/Cache.h
         src/DummyVAO.cpp
         src/DummyVAO.h

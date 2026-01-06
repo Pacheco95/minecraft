@@ -1,18 +1,30 @@
 #pragma once
 
-#include "MapUtils.h"
-
-#include <memory>
 #include <unordered_map>
+#include <sstream>
+#include <string>
 
-template <class Key, class Value> class Cache {
+constexpr auto sep = "_";
+
+template <class T> class Cache {
 public:
-  std::shared_ptr<Value> get(const Key &key);
+  template <class... CtorArgs> std::shared_ptr<T> &get(CtorArgs... args) {
+    std::ostringstream oss;
+    bool first = true;
+
+    ((oss << (first ? "" : sep) << args, first = false), ...);
+
+    const std::string key = std::string(typeid(T).name()) + sep + oss.str();
+
+    if (const auto entry = m_cache.find(key); entry != m_cache.end()) {
+      return entry->second;
+    }
+
+    m_cache.insert({key, std::make_shared<T>(std::forward<CtorArgs>(args)...)});
+
+    return m_cache[key];
+  }
 
 private:
-  std::unordered_map<Key, std::shared_ptr<Value>> s_cache;
+  std::unordered_map<std::string, std::shared_ptr<T>> m_cache{};
 };
-
-template <class Key, class Value> std::shared_ptr<Value> Cache<Key, Value>::get(const Key &key) {
-  return upsert(s_cache, key, [key] { return std::make_shared<Value>(key); });
-}
