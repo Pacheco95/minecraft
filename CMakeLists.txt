@@ -115,6 +115,9 @@ add_executable(Minecraft
         src/Cache.h
         src/DummyVAO.cpp
         src/DummyVAO.h
+        src/Renderable.h
+        src/Transform.cpp
+        src/Transform.h
 )
 
 target_link_libraries(Minecraft SDL3::SDL3 spdlog::spdlog OpenGL::GL assimp)
