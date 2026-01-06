@@ -9,21 +9,24 @@ void Model::render(const RenderContext &ctx) {
   for (auto &[mesh, material] : meshGroups) {
     if (!mesh || !material) {
       SPDLOG_WARN("Empty mesh or material");
-    };
+      continue;
+    }
 
-    // 1. Prepare the Shader (stored in the material)
     const std::shared_ptr<App::Shader> shader = material->getShader();
     shader->use();
 
-    // 2. Set Transformation Uniforms
+    // 1. Set Global/Scene Uniforms
     shader->set("projection", ctx.projectionMatrix);
     shader->set("view", ctx.viewMatrix);
     shader->set("model", ctx.modelMatrix);
 
-    // 3. Bind Textures from the Material
+    // 2. Set Material-Specific Uniforms (Colors, Shininess, etc.)
+    material->applyUniforms();
+
+    // 3. Bind Textures
     material->bindTextures();
 
-    // 4. Draw the Mesh
+    // 4. Draw
     mesh->render();
   }
 }
