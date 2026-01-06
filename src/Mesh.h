@@ -17,7 +17,8 @@ struct Vertex {
 
 class Mesh {
 public:
-  Mesh() : VAO(0), VBO(0), EBO(0) {}
+  Mesh() : VAO(0), VBO(0), EBO(0) {
+  }
 
   void setup();
 
