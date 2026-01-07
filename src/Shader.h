@@ -80,6 +80,8 @@ public:
   }
 
 private:
+  std::string vertexPath;
+  std::string fragmentPath;
   static void checkCompileErrors(GLuint shader, ShaderType type);
   static uint compile(const std::string &code, ShaderType type);
   std::unordered_map<std::string, GLint> m_uniformLocations{};

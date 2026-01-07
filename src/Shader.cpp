@@ -31,7 +31,8 @@ std::string loadShaderFile(const char *path) {
 Shader::Shader(const std::string &name) : Shader(SHADER_PATH + name + ".vert", SHADER_PATH + name + ".frag") {
 }
 
-Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) {
+Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath)
+    : vertexPath(vertexPath), fragmentPath(fragmentPath) {
   const std::string vertexCode = loadShaderFile(vertexPath.c_str());
   const std::string fragmentCode = loadShaderFile(fragmentPath.c_str());
 
