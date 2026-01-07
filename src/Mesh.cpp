@@ -29,6 +29,6 @@ void Mesh::setup() {
   glBindVertexArray(0);
 }
 
+#undef _bind
 #undef _size
 #undef _offset
-#undef _bind
