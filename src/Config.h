@@ -5,7 +5,7 @@ namespace Window {
 constexpr auto TITLE = "Minecraft";
 constexpr int WIDTH = 1024;
 constexpr int HEIGHT = 1024;
-inline float CLEAR_COLOR[] = {0.0f, 0.0f, 0.0f};
+inline float CLEAR_COLOR[] = {0.5f, 0.5f, 0.5f};
 } // namespace Window
 
 namespace Core {
