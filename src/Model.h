@@ -11,6 +11,7 @@ class Model : public Renderable {
 public:
   void setup() override;
   void render(const RenderContext &ctx) override;
+  void addMeshGroup(const std::shared_ptr<Mesh> &mesh, const std::shared_ptr<Material> &material);
 
 private:
   struct MeshGroup {

@@ -3,6 +3,7 @@
 #include <spdlog/spdlog.h>
 
 void Model::setup() {
+  throw "Not implemented";
 }
 
 void Model::render(const RenderContext &ctx) {
@@ -29,4 +30,8 @@ void Model::render(const RenderContext &ctx) {
     // 4. Draw
     mesh->render();
   }
+}
+
+void Model::addMeshGroup(const std::shared_ptr<Mesh> &mesh, const std::shared_ptr<Material> &material) {
+  meshGroups.push_back({mesh, material});
 }

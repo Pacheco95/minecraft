@@ -23,7 +23,12 @@ void Material::applyUniforms() const {
   for (auto const &[name, val] : floatUniforms) {
     shader->set(name, val);
   }
+
   for (auto const &[name, val] : vec3Uniforms) {
+    shader->set(name, val);
+  }
+
+  for (auto const &[name, val] : vec4Uniforms) {
     shader->set(name, val);
   }
 }

@@ -32,7 +32,8 @@ enum VertexAttributeIndex {
 
 class Mesh {
 public:
-  Mesh() : VAO(0), VBO(0), EBO(0) {
+  Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices)
+      : vertices(std::move(vertices)), indices(std::move(indices)), VAO(0), VBO(0), EBO(0) {
   }
 
   void setup();
