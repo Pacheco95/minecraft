@@ -44,6 +44,10 @@ public:
   void bindTextures() const;
   void applyUniforms() const;
 
+  void setShader(std::shared_ptr<App::Shader> shader) {
+    this->shader = shader;
+  }
+
   void setUniform(const std::string &name, const float value) {
     floatUniforms[name] = value;
   }
