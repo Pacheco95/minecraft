@@ -3,7 +3,11 @@
 #include <spdlog/spdlog.h>
 
 void Model::setup() {
-  throw "Not implemented";
+  for (const auto &[mesh, material] : meshGroups) {
+    if (mesh) {
+      mesh->setup();
+    }
+  }
 }
 
 void Model::render(const RenderContext &ctx) {
