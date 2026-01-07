@@ -5,12 +5,35 @@
 #include "Shader.h"
 #include "Texture2D.h"
 
+// Vec4 uniforms
 constexpr auto DIFFUSE_COLOR_UNIFORM_NAME = "uDiffuseColor";
 constexpr auto AMBIENT_COLOR_UNIFORM_NAME = "uAmbientColor";
 constexpr auto SPECULAR_COLOR_UNIFORM_NAME = "uSpecularColor";
 constexpr auto EMISSIVE_COLOR_UNIFORM_NAME = "uEmissiveColor";
 constexpr auto TRANSPARENT_COLOR_UNIFORM_NAME = "uTransparentColor";
 constexpr auto REFLECTIVE_COLOR_UNIFORM_NAME = "uReflectiveColor";
+
+// Float uniforms
+/// A value from 0.0 (transparent) to 1.0 (opaque).
+constexpr auto OPACITY_UNIFORM_NAME = "uOpacity";
+
+/// The specular exponent (how "tight" the highlight is).
+constexpr auto SHININESS_UNIFORM_NAME = "uShininess";
+
+/// A multiplier for the specular color.
+constexpr auto SHININESS_STRENGTH_UNIFORM_NAME = "uShininessStrength";
+
+/// How much of the reflection color to mix in.
+constexpr auto REFLECTIVITY_UNIFORM_NAME = "uReflectivity";
+
+/// The Index of Refraction (IoR), usually 1.0 or higher (e.g., 1.33 for water).
+constexpr auto REFRACTION_INDEX_UNIFORM_NAME = "uRefractionIndex";
+
+/// A multiplier for the intensity of the normal/bump map.
+constexpr auto BUMP_SCALING_UNIFORM_NAME = "uBumpScaling";
+
+/// Similar to opacity, used by some formats like FBX.
+constexpr auto TRANSPARENCY_FACTOR_UNIFORM_NAME = "uTransparencyFactor";
 
 class Material {
 public:

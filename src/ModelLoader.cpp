@@ -96,8 +96,8 @@ std::shared_ptr<Mesh> ModelLoader::processMesh(aiMesh *mesh, const aiScene *scen
 std::shared_ptr<Material> ModelLoader::loadMaterial(const aiMaterial *mat, const std::string &directory) {
   auto material = std::make_shared<Material>();
 
-#define loadColorUniform(colorKey, uniformName)                                                                        \
-  if (aiColor4D color; mat->Get(colorKey, color) == AI_SUCCESS) {                                                      \
+#define loadColorUniform(aiMaterialKey, uniformName)                                                                   \
+  if (aiColor4D color; mat->Get(aiMaterialKey, color) == AI_SUCCESS) {                                                 \
     material->setUniform(uniformName, glm::vec4(color.r, color.g, color.b, color.a));                                  \
   }
 
@@ -108,6 +108,21 @@ std::shared_ptr<Material> ModelLoader::loadMaterial(const aiMaterial *mat, const
   loadColorUniform(AI_MATKEY_COLOR_TRANSPARENT, TRANSPARENT_COLOR_UNIFORM_NAME);
   loadColorUniform(AI_MATKEY_COLOR_REFLECTIVE, REFLECTIVE_COLOR_UNIFORM_NAME);
 #undef loadColorUniform
+
+#define loadFloatUniform(aiMaterialKey, uniformName)                                                                   \
+  if (float floatMaterialAttr; mat->Get(aiMaterialKey, floatMaterialAttr) == AI_SUCCESS) {                             \
+    material->setUniform(uniformName, floatMaterialAttr);                                                              \
+  }
+
+  loadFloatUniform(AI_MATKEY_OPACITY, OPACITY_UNIFORM_NAME);
+  loadFloatUniform(AI_MATKEY_SHININESS, SHININESS_UNIFORM_NAME);
+  loadFloatUniform(AI_MATKEY_SHININESS_STRENGTH, SHININESS_STRENGTH_UNIFORM_NAME);
+  loadFloatUniform(AI_MATKEY_REFLECTIVITY, REFLECTIVITY_UNIFORM_NAME);
+  loadFloatUniform(AI_MATKEY_REFRACTI, REFRACTION_INDEX_UNIFORM_NAME);
+  loadFloatUniform(AI_MATKEY_BUMPSCALING, BUMP_SCALING_UNIFORM_NAME);
+  loadFloatUniform(AI_MATKEY_TRANSPARENCYFACTOR, TRANSPARENCY_FACTOR_UNIFORM_NAME);
+
+#undef loadFloatUniform
 
   // Helper to load a specific texture type
   auto loadTex = [&](const aiTextureType type) -> std::shared_ptr<Texture2D> {
