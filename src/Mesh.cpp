@@ -1,5 +1,12 @@
 #include "Mesh.h"
 
+#define _offset(name) reinterpret_cast<void *>(offsetof(Vertex, name))
+#define _size(name) decltype(Vertex::name)::length()
+
+#define _bind(name, glType)                                                                                            \
+  glEnableVertexAttribArray(name##AttrIndex);                                                                          \
+  glVertexAttribPointer(name##AttrIndex, _size(name), glType, GL_FALSE, sizeof(Vertex), _offset(name))
+
 void Mesh::setup() {
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
@@ -12,23 +19,16 @@ void Mesh::setup() {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
-  glEnableVertexAttribArray(positionAttrIndex);
-  glVertexAttribPointer(positionAttrIndex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
-
-  glEnableVertexAttribArray(colorAttrIndex);
-  glVertexAttribPointer(colorAttrIndex, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, color));
-
-  glEnableVertexAttribArray(normalAttrIndex);
-  glVertexAttribPointer(normalAttrIndex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, normal));
-
-  glEnableVertexAttribArray(uvAttrIndex);
-  glVertexAttribPointer(uvAttrIndex, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, uv));
-
-  glEnableVertexAttribArray(tangentAttrIndex);
-  glVertexAttribPointer(tangentAttrIndex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, tangent));
-
-  glEnableVertexAttribArray(bitangentAttrIndex);
-  glVertexAttribPointer(bitangentAttrIndex, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, bitangent));
+  _bind(position, GL_FLOAT);
+  _bind(color, GL_FLOAT);
+  _bind(normal, GL_FLOAT);
+  _bind(uv, GL_FLOAT);
+  _bind(tangent, GL_FLOAT);
+  _bind(bitangent, GL_FLOAT);
 
   glBindVertexArray(0);
 }
+
+#undef _size
+#undef _offset
+#undef _bind
