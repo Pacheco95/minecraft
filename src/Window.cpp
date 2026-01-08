@@ -13,7 +13,7 @@
 namespace App {
 
 std::shared_ptr<Model> g_model3d, g_cube;
-glm::vec3 g_lightPosition(0.0f, 2.0f, 0.0f);
+glm::vec3 g_lightPosition(-0.460f, -0.490f, 1.170f);
 glm::vec3 g_objectPosition(0.0f, 0.0f, 0.0f);
 glm::vec4 g_lightColor(1.0f);
 

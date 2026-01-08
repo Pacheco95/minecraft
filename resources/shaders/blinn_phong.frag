@@ -9,18 +9,32 @@ in VS_OUT {
 }
 fs_in;
 
-uniform sampler2D texDiffuse;
+struct Material {
+  sampler2D diffuseTexture;
+  sampler2D specularTexture;
+  float shininess;
+};
 
-uniform vec3 uLightPos = vec3(1.0, 1.0, 1.0);
+struct Light {
+  vec3 position;
+
+  vec4 ambientColor;
+  vec4 diffuseColor;
+  vec4 specularColor;
+};
+
+uniform Material uMaterial;
+uniform Light uLight;
 uniform vec3 uViewPosition;
-uniform bool blinn = true;
+
+const bool blinn = true;
 
 void main() {
-  vec3 color = texture(texDiffuse, fs_in.TexCoords).rgb;
+  vec3 color = texture(uMaterial.diffuseTexture, fs_in.TexCoords).rgb;
   // ambient
   vec3 ambient = 0.05 * color;
   // diffuse
-  vec3 lightDir = normalize(uLightPos - fs_in.FragPos);
+  vec3 lightDir = normalize(uLight.position - fs_in.FragPos);
   vec3 normal = normalize(fs_in.Normal);
   float diff = max(dot(lightDir, normal), 0.0);
   vec3 diffuse = diff * color;

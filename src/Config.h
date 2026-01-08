@@ -15,8 +15,8 @@ constexpr auto GLSL_VERSION = "#version 330";
 } // namespace Core
 
 namespace Renderer {
-constexpr auto DEFAULT_VERTEX_SHADER = "basic.vert";
-constexpr auto DEFAULT_FRAGMENT_SHADER = "basic.frag";
+constexpr auto DEFAULT_VERTEX_SHADER = "blinn_phong.vert";
+constexpr auto DEFAULT_FRAGMENT_SHADER = "blinn_phong.frag";
 constexpr auto COLOR_PLACEHOLDER = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 } // namespace Renderer
 } // namespace App::Config
