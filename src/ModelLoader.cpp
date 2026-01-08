@@ -147,6 +147,14 @@ std::shared_ptr<Material> ModelLoader::loadMaterial(const aiMaterial *mat, const
 
 #undef loadFloatUniform
 
+  std::vector<std::pair<std::string, aiPropertyTypeInfo>> loadedProperties = {};
+
+  loadedProperties.reserve(mat->mNumProperties);
+
+  for (int i = 0; i < mat->mNumProperties; i++) {
+    loadedProperties.emplace_back(mat->mProperties[i]->mKey.C_Str(), mat->mProperties[i]->mType);
+  }
+
   // Helper to load a specific texture type
   auto loadTex = [&](const aiTextureType type) -> std::shared_ptr<Texture2D> {
     if (mat->GetTextureCount(type) > 0) {

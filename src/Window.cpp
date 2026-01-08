@@ -77,7 +77,7 @@ SDL_AppResult Window::setup() {
 
   SPDLOG_INFO("SDL and OpenGL initialized successfully");
 
-  g_model3d = ModelLoader::Load("resources/models/backpack/backpack.obj");
+  g_model3d = ModelLoader::Load("resources/models/pbr/rusted_sphere/rusted_sphere.obj");
   g_cube = ModelLoader::Load("resources/models/cube/cube.obj");
 
   g_camera.setActive(false);
@@ -185,9 +185,9 @@ void renderAxis() {
 }
 
 void Window::renderOpenGlData() {
-  renderGrid();
-  renderAxis();
-  renderLightIndicator();
+  // renderGrid();
+  // renderAxis();
+  // renderLightIndicator();
   render3DModel();
 }
 
