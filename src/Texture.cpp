@@ -1,4 +1,4 @@
-#include "Texture2D.h"
+#include "Texture.h"
 
 #include <utility>
 #include <filesystem>
@@ -7,14 +7,14 @@
 #include <spdlog/spdlog.h>
 #include <stb_image.h>
 
-Texture2D::Texture2D(std::string path) : m_id(0), m_path(std::move(path)) {
+Texture::Texture(std::string path) : m_id(0), m_path(std::move(path)) {
 }
 
-Texture2D::~Texture2D() {
+Texture::~Texture() {
   free();
 }
 
-void Texture2D::load() {
+void Texture::load() {
   if (m_id) {
     return;
   }
@@ -60,11 +60,11 @@ void Texture2D::load() {
   SPDLOG_DEBUG(logMessage, m_path, width, height, channels, m_id);
 }
 
-void Texture2D::bind() const {
+void Texture::bind() const {
   glBindTexture(GL_TEXTURE_2D, m_id);
 }
 
-void Texture2D::free() const {
+void Texture::free() const {
   if (m_id) {
     glDeleteTextures(1, &m_id);
   }

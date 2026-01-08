@@ -7,7 +7,7 @@
 #include "Window.h"
 #include "Camera.h"
 #include "FloorGrid.h"
-#include "Texture2D.h"
+#include "Texture.h"
 #include "Axis.h"
 #include "Cache.h"
 
@@ -21,7 +21,7 @@ public:
   std::shared_ptr<Camera> m_camera = nullptr;
   std::shared_ptr<FloorGrid> m_floorGrid = nullptr;
   std::shared_ptr<Axis> m_axis = nullptr;
-  std::shared_ptr<Cache<Texture2D>> m_textureCache = nullptr;
+  std::shared_ptr<Cache<Texture>> m_textureCache = nullptr;
 
   Container(const Container &) = delete;
   Container &operator=(const Container &) = delete;
@@ -42,7 +42,7 @@ public:
     m_camera = std::make_shared<Camera>(glm::vec3(4.0f, 2.0f, 4.0f));
     m_floorGrid = std::make_shared<FloorGrid>();
     m_axis = std::make_shared<Axis>();
-    m_textureCache = std::make_shared<Cache<Texture2D>>();
+    m_textureCache = std::make_shared<Cache<Texture>>();
   }
 
   void dispose() {

@@ -156,13 +156,13 @@ std::shared_ptr<Material> ModelLoader::loadMaterial(const aiMaterial *mat, const
   }
 
   // Helper to load a specific texture type
-  auto loadTex = [&](const aiTextureType type) -> std::shared_ptr<Texture2D> {
+  auto loadTex = [&](const aiTextureType type) -> std::shared_ptr<Texture> {
     if (mat->GetTextureCount(type) > 0) {
       aiString texturePath;
       mat->GetTexture(type, 0, &texturePath);
       const std::string fullPath = directory + "/" + texturePath.C_Str();
 
-      std::shared_ptr<Texture2D> texture = g_textureCache.get(fullPath);
+      std::shared_ptr<Texture> texture = g_textureCache.get(fullPath);
       texture->load(); // Preload from disk to GPU immediately
       return texture;
     }

@@ -2,10 +2,10 @@
 
 #include <string>
 
-class Texture2D {
+class Texture {
 public:
-  explicit Texture2D(std::string path);
-  ~Texture2D();
+  explicit Texture(std::string path);
+  ~Texture();
 
   void load();
   void bind() const;

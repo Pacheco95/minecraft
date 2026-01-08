@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "Shader.h"
-#include "Texture2D.h"
+#include "Texture.h"
 
 enum TextureIndex {
   DIFFUSE_TEXTURE_INDEX,
@@ -75,23 +75,23 @@ public:
     m_vec4Uniforms[name] = value;
   }
 
-  void setDiffuseTex(const std::shared_ptr<Texture2D> &diffuseTexture) {
+  void setDiffuseTex(const std::shared_ptr<Texture> &diffuseTexture) {
     m_diffuseTexture = diffuseTexture;
   }
 
-  void setSpecularTex(const std::shared_ptr<Texture2D> &specularTexture) {
+  void setSpecularTex(const std::shared_ptr<Texture> &specularTexture) {
     m_specularTexture = specularTexture;
   }
 
-  void setNormalTex(const std::shared_ptr<Texture2D> &normalTexture) {
+  void setNormalTex(const std::shared_ptr<Texture> &normalTexture) {
     m_normalTexture = normalTexture;
   }
 
 private:
   std::shared_ptr<App::Shader> m_shader;
-  std::shared_ptr<Texture2D> m_diffuseTexture;
-  std::shared_ptr<Texture2D> m_specularTexture;
-  std::shared_ptr<Texture2D> m_normalTexture;
+  std::shared_ptr<Texture> m_diffuseTexture;
+  std::shared_ptr<Texture> m_specularTexture;
+  std::shared_ptr<Texture> m_normalTexture;
   std::unordered_map<std::string, float> m_floatUniforms;
   std::unordered_map<std::string, glm::vec3> m_vec3Uniforms;
   std::unordered_map<std::string, glm::vec4> m_vec4Uniforms;

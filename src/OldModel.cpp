@@ -140,7 +140,7 @@ bool OldModel::isLoaded() const {
 }
 
 void OldModel::cleanup() {
-  // Textures are cleared by Texture2D class destructor
+  // Textures are cleared by Texture class destructor
   m_meshes.clear();
 }
 

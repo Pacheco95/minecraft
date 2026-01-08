@@ -99,8 +99,8 @@ add_executable(Minecraft
         src/Shader.cpp
         src/OldModel.h
         src/OldModel.cpp
-        src/Texture2D.h
-        src/Texture2D.cpp
+        src/Texture.h
+        src/Texture.cpp
         src/Camera.h
         src/Camera.cpp
         src/Time.cpp

@@ -11,7 +11,7 @@
 #include <assimp/postprocess.h>
 #include <spdlog/spdlog.h>
 
-#include "Texture2D.h"
+#include "Texture.h"
 
 namespace App {
 
@@ -31,9 +31,9 @@ struct Material {
 
   float shininess;
 
-  std::shared_ptr<Texture2D> diffuseTexture;
-  std::shared_ptr<Texture2D> normalTexture;
-  std::shared_ptr<Texture2D> specularTexture;
+  std::shared_ptr<Texture> diffuseTexture;
+  std::shared_ptr<Texture> normalTexture;
+  std::shared_ptr<Texture> specularTexture;
 };
 
 // Mesh structure with OpenGL handles
