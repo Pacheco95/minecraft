@@ -13,9 +13,7 @@
 namespace App {
 
 std::shared_ptr<Model> g_model3d, g_cube;
-glm::vec3 g_lightPosition(-0.460f, -0.490f, 1.170f);
-glm::vec3 g_objectPosition(0.0f, 0.0f, 0.0f);
-glm::vec4 g_lightColor(1.0f);
+Light g_light = Light::Point(glm::vec3(-0.460f, -0.490f, 1.170f), glm::vec4(1.0f));
 
 #define g_lightDirection (glm::normalize(-g_lightPosition))
 
@@ -146,9 +144,7 @@ RenderContext getDefaultRenderContext() {
       .viewMatrix = g_camera.getViewMatrix(),
       .projectionMatrix = getProjectionMatrix(),
       .cameraPosition = g_camera.getPosition(),
-      .lightPosition = g_lightPosition,
-      .lightDirection = g_lightDirection,
-      .lightColor = g_lightColor,
+      .light = g_light,
       .customShader =
           g_shaderCache.get(Config::Renderer::DEFAULT_VERTEX_SHADER, Config::Renderer::DEFAULT_FRAGMENT_SHADER),
   };
@@ -156,7 +152,7 @@ RenderContext getDefaultRenderContext() {
 
 void renderLightIndicator() {
   auto model = glm::mat4(1.0f);
-  model = glm::translate(model, g_lightPosition);
+  model = glm::translate(model, g_light.position);
   model = glm::scale(model, glm::vec3(0.1f));
 
   RenderContext renderContext = getDefaultRenderContext();
@@ -188,38 +184,11 @@ void renderAxis() {
   g_axis.render();
 }
 
-void renderDummyVAO() {
-  static int frame = 0;
-  frame++;
-
-  Shader &shader = *g_shaderCache.get("dummy_vao.vert", "ocean.frag");
-  shader.use();
-  auto [width, height] = g_imguiManager.io().DisplaySize;
-  glm::vec4 mouse;
-  const Uint32 buttons = SDL_GetMouseState(&mouse.x, &mouse.y);
-
-  if (buttons & SDL_BUTTON_LMASK) {
-    mouse.z = 1.0;
-  }
-
-  if (buttons & SDL_BUTTON_RMASK) {
-    mouse.w = 1.0;
-  }
-
-  shader.set("iTime", static_cast<float>(SDL_GetTicks()) / 1000.0f);
-  shader.set("iFrame", frame);
-  shader.set("iResolution", glm::vec2(width, height));
-  shader.set("iMouse", mouse);
-  const DummyVAO dummyVAO;
-  dummyVAO.render();
-}
-
 void Window::renderOpenGlData() {
   renderGrid();
   renderAxis();
   render3DModel();
   renderLightIndicator();
-  // renderDummyVAO();
 }
 
 void Window::render() const {
@@ -234,11 +203,18 @@ void Window::render() const {
   ImGui::SetNextWindowSizeConstraints(ImVec2(250, 250), ImVec2(FLT_MAX, FLT_MAX));
   ImGui::Begin("Engine Tweaks", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing);
   ImGui::Text("FPS: %.2f", g_imguiManager.io().Framerate);
-  ImGui::Text("Camera Pos: %.2f, %.2f, %.2f", g_camera.getPosition().x, g_camera.getPosition().y,
+  ImGui::SeparatorText("Camera");
+  ImGui::Text("Position: %.2f, %.2f, %.2f", g_camera.getPosition().x, g_camera.getPosition().y,
               g_camera.getPosition().z);
-  ImGui::DragFloat3("Light position", glm::value_ptr(g_lightPosition), 0.01);
-  ImGui::Text("Light direction: %.2f, %.2f, %.2f", g_lightDirection.x, g_lightDirection.y, g_lightDirection.z);
-  ImGui::ColorEdit4("Clear Color", Config::Window::CLEAR_COLOR, ImGuiColorEditFlags_Float);
+
+  ImGui::SeparatorText("Light");
+  ImGui::Text("Type: %s", g_light.typeStr());
+  ImGui::ColorEdit4("Color", glm::value_ptr(g_light.color));
+  ImGui::DragFloat3("Position", glm::value_ptr(g_light.position), 0.01);
+  ImGui::DragFloat3("Direction", glm::value_ptr(g_light.direction), 0.01);
+
+  ImGui::SeparatorText("Renderer");
+  ImGui::ColorEdit3("Clear Color", Config::Window::CLEAR_COLOR);
   ImGui::End();
 
   ImGui::Render();

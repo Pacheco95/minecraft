@@ -128,6 +128,7 @@ add_executable(Minecraft
         src/GameObject.h
         src/ModelLoader.cpp
         src/ModelLoader.h
+        src/Light.h
 )
 
 target_link_libraries(Minecraft SDL3::SDL3 spdlog::spdlog OpenGL::GL assimp)
