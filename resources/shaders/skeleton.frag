@@ -74,7 +74,7 @@ void main() {
   vec4 x = vec4(1.0);
 #endif
 
-  FragColor = uWorld.lights[0].color + x;
+  FragColor = texture(uMaterial.diffuseTexture, fsIn.texCoords);
 }
 
 #ifdef DEBUG
