@@ -53,7 +53,7 @@ glm::mat4 Camera::getViewMatrix() const {
   return glm::lookAt(m_position, m_position + m_front, m_up);
 }
 
-glm::vec3 Camera::getPosition() const {
+const glm::vec3 &Camera::getPosition() const {
   return m_position;
 }
 
@@ -103,11 +103,11 @@ void Camera::handleKeyInput() {
   }
 
   if (keys[SDL_SCANCODE_SPACE]) {
-    m_position += m_up * frameSpeed;
+    m_position += glm::vec3(0.0, 1.0, 0.0) * frameSpeed;
   }
 
-  if (keys[SDL_SCANCODE_Q]) {
-    m_position -= m_up * frameSpeed;
+  if (keys[SDL_SCANCODE_LALT]) {
+    m_position -= glm::vec3(0.0, 1.0, 0.0) * frameSpeed;
   }
 }
 

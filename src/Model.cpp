@@ -17,13 +17,22 @@ void Model::render(const RenderContext &ctx) {
       continue;
     }
 
-    const std::shared_ptr<App::Shader> shader = material->getShader();
+    const std::shared_ptr<App::Shader> shader = ctx.customShader.value_or(material->getShader());
+
     shader->use();
 
     // 1. Set Global/Scene Uniforms
-    shader->set("projection", ctx.projectionMatrix);
-    shader->set("view", ctx.viewMatrix);
-    shader->set("model", ctx.modelMatrix);
+    shader->set("uProjection", ctx.projectionMatrix);
+    shader->set("uView", ctx.viewMatrix);
+    shader->set("uModel", ctx.modelMatrix);
+    shader->set("uViewPosition", ctx.cameraPosition);
+    shader->set("uLight.position", ctx.lightPosition);
+    shader->set("uLight.direction", ctx.lightDirection);
+    shader->set("uLight.color", ctx.lightColor);
+
+    shader->set("uLight.ambientColor", glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+    shader->set("uLight.diffuseColor", glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
+    shader->set("uLight.specularColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
     // 2. Set Material-Specific Uniforms (Colors, Shininess, etc.)
     material->applyUniforms();
@@ -32,7 +41,7 @@ void Model::render(const RenderContext &ctx) {
     material->bindTextures();
 
     // 4. Draw
-    mesh->render();
+    mesh->render(ctx.renderMode);
   }
 }
 

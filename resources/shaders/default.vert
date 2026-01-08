@@ -17,17 +17,17 @@ out VS_OUT {
 }
 vs_out;
 
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
+uniform mat4 uModel;
+uniform mat4 uView;
+uniform mat4 uProjection;
 
 void main() {
-  vs_out.FragPos = vec3(model * aPos);
+  vs_out.FragPos = vec3(uModel * vec4(aPos, 1.0));
   vs_out.Color = aColor;
   vs_out.TexCoords = aTexCoords;
 
   // Normal matrix to handle non-uniform scaling
-  mat3 normalMatrix = transpose(inverse(mat3(model)));
+  mat3 normalMatrix = transpose(inverse(mat3(uModel)));
   vs_out.Normal = normalize(normalMatrix * aNormal);
 
   // Construct TBN matrix for Normal Mapping
@@ -36,5 +36,5 @@ void main() {
   vec3 N = normalize(normalMatrix * aNormal);
   vs_out.TBN = mat3(T, B, N);
 
-  gl_Position = projection * view * model * aPos;
+  gl_Position = uProjection * uView * uModel * vec4(aPos, 1.0);
 }

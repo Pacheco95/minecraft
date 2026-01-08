@@ -5,13 +5,19 @@
 #include <imgui.h>
 
 #include "Container.h"
-#include "OldModel.h"
+#include "Model.h"
 #include "Config.h"
 #include "DummyVAO.h"
+#include "ModelLoader.h"
 
 namespace App {
 
-OldModel model3d;
+std::shared_ptr<Model> g_model3d, g_cube;
+glm::vec3 g_lightPosition(0.0f, 2.0f, 0.0f);
+glm::vec3 g_objectPosition(0.0f, 0.0f, 0.0f);
+glm::vec4 g_lightColor(1.0f);
+
+#define g_lightDirection (glm::normalize(-g_lightPosition))
 
 SDL_AppResult Window::setup() {
   SDL_SetAppMetadata("Minecraft", "0.1.0", "com.example.minecraft");
@@ -73,8 +79,8 @@ SDL_AppResult Window::setup() {
 
   SPDLOG_INFO("SDL and OpenGL initialized successfully");
 
-  model3d.load("resources/models/backpack/backpack.obj");
-  model3d.setupAllBuffers();
+  g_model3d = ModelLoader::Load("resources/models/backpack/backpack.obj");
+  g_cube = ModelLoader::Load("resources/models/cube/cube.obj");
 
   g_camera.setActive(false);
   g_floorGrid.setup();
@@ -134,17 +140,37 @@ glm::mat4 getProjectionMatrix() {
   return glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
 }
 
+RenderContext getDefaultRenderContext() {
+  return {
+      .modelMatrix = glm::mat4(1.0f),
+      .viewMatrix = g_camera.getViewMatrix(),
+      .projectionMatrix = getProjectionMatrix(),
+      .cameraPosition = g_camera.getPosition(),
+      .lightPosition = g_lightPosition,
+      .lightDirection = g_lightDirection,
+      .lightColor = g_lightColor,
+      .customShader =
+          g_shaderCache.get(Config::Renderer::DEFAULT_VERTEX_SHADER, Config::Renderer::DEFAULT_FRAGMENT_SHADER),
+  };
+}
+
+void renderLightIndicator() {
+  auto model = glm::mat4(1.0f);
+  model = glm::translate(model, g_lightPosition);
+  model = glm::scale(model, glm::vec3(0.1f));
+
+  RenderContext renderContext = getDefaultRenderContext();
+
+  renderContext.modelMatrix = model;
+  renderContext.customShader = g_shaderCache.get("cube");
+
+  g_cube->render(renderContext);
+}
+
 void render3DModel() {
-  Shader &materialShader = *g_shaderCache.get("material");
-  materialShader.use();
+  const RenderContext renderContext = getDefaultRenderContext();
 
-  // model = glm::rotate(model, static_cast<float>(SDL_GetTicks()) / 1000.f, glm::vec3(0.5f, 0.5f, 0.0f));
-
-  materialShader.set("uModel", glm::mat4(1.0f));
-  materialShader.set("uView", g_camera.getViewMatrix());
-  materialShader.set("uProjection", getProjectionMatrix());
-
-  model3d.render();
+  g_model3d->render(renderContext);
 }
 
 void renderGrid() {
@@ -156,7 +182,7 @@ void renderGrid() {
 void renderAxis() {
   Shader &axisShader = *g_shaderCache.get("axis");
   axisShader.use();
-  axisShader.set("uModel", glm::scale(glm::mat4(1.0f), 1.f * glm::vec3(1)));
+  axisShader.set("uModel", glm::scale(glm::mat4(1.0f), 3.f * glm::vec3(1)));
   axisShader.set("uView", g_camera.getViewMatrix());
   axisShader.set("uProj", getProjectionMatrix());
   g_axis.render();
@@ -192,7 +218,8 @@ void Window::renderOpenGlData() {
   renderGrid();
   renderAxis();
   render3DModel();
-  renderDummyVAO();
+  renderLightIndicator();
+  // renderDummyVAO();
 }
 
 void Window::render() const {
@@ -200,6 +227,21 @@ void Window::render() const {
 
   g_imguiManager.newFrame();
   g_imguiManager.populateFrame();
+
+  static bool show_demo = true;
+  ImGui::ShowDemoWindow(&show_demo);
+
+  ImGui::SetNextWindowSizeConstraints(ImVec2(250, 250), ImVec2(FLT_MAX, FLT_MAX));
+  ImGui::Begin("Engine Tweaks", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing);
+  ImGui::Text("FPS: %.2f", g_imguiManager.io().Framerate);
+  ImGui::Text("Camera Pos: %.2f, %.2f, %.2f", g_camera.getPosition().x, g_camera.getPosition().y,
+              g_camera.getPosition().z);
+  ImGui::DragFloat3("Light position", glm::value_ptr(g_lightPosition), 0.01);
+  ImGui::Text("Light direction: %.2f, %.2f, %.2f", g_lightDirection.x, g_lightDirection.y, g_lightDirection.z);
+  ImGui::ColorEdit4("Clear Color", Config::Window::CLEAR_COLOR, ImGuiColorEditFlags_Float);
+  ImGui::End();
+
+  ImGui::Render();
 
   auto [width, height] = g_imguiManager.io().DisplaySize;
   const auto [r, g, b] = Config::Window::CLEAR_COLOR;

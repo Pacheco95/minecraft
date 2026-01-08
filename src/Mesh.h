@@ -38,11 +38,7 @@ public:
 
   void setup();
 
-  void render() const {
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, static_cast<GLuint>(indices.size()), GL_UNSIGNED_INT, nullptr);
-    glBindVertexArray(0);
-  }
+  void render(GLuint renderMode = GL_TRIANGLES) const;
 
 private:
   std::vector<Vertex> vertices;

@@ -15,8 +15,6 @@ Texture2D::~Texture2D() {
 }
 
 void Texture2D::load() {
-  // TODO: add cache
-
   if (m_id) {
     return;
   }

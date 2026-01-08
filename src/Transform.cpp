@@ -25,7 +25,7 @@ glm::mat4 Transform::GetLocalModelMatrix() const {
   return translation * rotation * scale;
 }
 
-glm::mat4 Transform::GetModelMatrix() const {
+const glm::mat4 &Transform::GetModelMatrix() const {
   if (m_isDirty) {
     const glm::mat4 localMatrix = GetLocalModelMatrix();
 
@@ -36,6 +36,7 @@ glm::mat4 Transform::GetModelMatrix() const {
     }
     m_isDirty = false;
   }
+
   return m_modelMatrix;
 }
 

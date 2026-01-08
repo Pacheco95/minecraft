@@ -56,7 +56,7 @@ public:
 
   // --- Matrix Retrieval ---
   // This is what you pass to your Shader (Uniform "model")
-  glm::mat4 GetModelMatrix() const;
+  const glm::mat4 &GetModelMatrix() const;
 
   // --- Utility Operations ---
   void Translate(const glm::vec3 &translation);

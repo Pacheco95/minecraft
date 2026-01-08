@@ -15,7 +15,7 @@ public:
   void setActive(bool active);
 
   [[nodiscard]] glm::mat4 getViewMatrix() const;
-  [[nodiscard]] glm::vec3 getPosition() const;
+  [[nodiscard]] const glm::vec3 &getPosition() const;
   void reset();
 
 private:

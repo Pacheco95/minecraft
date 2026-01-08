@@ -1,35 +1,11 @@
 #version 330 core
 
+layout(location = 0) in vec3 aPos;
+
 uniform mat4 uModel;
 uniform mat4 uView;
 uniform mat4 uProjection;
 
 void main() {
-  // 36 vertices = 12 triangles = cube
-  const vec3 positions[36] = vec3[](
-      // +X
-      vec3(0.5, -0.5, -0.5), vec3(0.5, 0.5, -0.5), vec3(0.5, 0.5, 0.5), vec3(0.5, -0.5, -0.5), vec3(0.5, 0.5, 0.5),
-      vec3(0.5, -0.5, 0.5),
-
-      // -X
-      vec3(-0.5, -0.5, 0.5), vec3(-0.5, 0.5, 0.5), vec3(-0.5, 0.5, -0.5), vec3(-0.5, -0.5, 0.5), vec3(-0.5, 0.5, -0.5),
-      vec3(-0.5, -0.5, -0.5),
-
-      // +Y
-      vec3(-0.5, 0.5, -0.5), vec3(-0.5, 0.5, 0.5), vec3(0.5, 0.5, 0.5), vec3(-0.5, 0.5, -0.5), vec3(0.5, 0.5, 0.5),
-      vec3(0.5, 0.5, -0.5),
-
-      // -Y
-      vec3(-0.5, -0.5, 0.5), vec3(-0.5, -0.5, -0.5), vec3(0.5, -0.5, -0.5), vec3(-0.5, -0.5, 0.5),
-      vec3(0.5, -0.5, -0.5), vec3(0.5, -0.5, 0.5),
-
-      // +Z
-      vec3(-0.5, -0.5, 0.5), vec3(0.5, -0.5, 0.5), vec3(0.5, 0.5, 0.5), vec3(-0.5, -0.5, 0.5), vec3(0.5, 0.5, 0.5),
-      vec3(-0.5, 0.5, 0.5),
-
-      // -Z
-      vec3(0.5, -0.5, -0.5), vec3(-0.5, -0.5, -0.5), vec3(-0.5, 0.5, -0.5), vec3(0.5, -0.5, -0.5),
-      vec3(-0.5, 0.5, -0.5), vec3(0.5, 0.5, -0.5));
-
-  gl_Position = uProjection * uModel * uView * vec4(positions[gl_VertexID], 1.0);
+  gl_Position = uProjection * uView * uModel * vec4(aPos, 1.0);
 }

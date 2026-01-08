@@ -29,6 +29,12 @@ void Mesh::setup() {
   glBindVertexArray(0);
 }
 
+void Mesh::render(const GLuint renderMode) const {
+  glBindVertexArray(VAO);
+  glDrawElements(renderMode, static_cast<GLuint>(indices.size()), GL_UNSIGNED_INT, nullptr);
+  glBindVertexArray(0);
+}
+
 #undef _bind
 #undef _size
 #undef _offset

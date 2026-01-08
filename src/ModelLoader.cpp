@@ -1,6 +1,10 @@
 #include "ModelLoader.h"
 
+#include "Config.h"
+
 #include <spdlog/spdlog.h>
+
+#include "Container.h"
 
 std::shared_ptr<Model> ModelLoader::Load(const std::string &path) {
   Assimp::Importer importer;
@@ -66,6 +70,14 @@ std::shared_ptr<Mesh> ModelLoader::processMesh(aiMesh *mesh, const aiScene *scen
     // Map Assimp vectors to your glm::vec4/vec3 fields in Vertex struct
     vertex.position = glm::vec4(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z, 1.0f);
 
+    if (mesh->mColors[0]) {
+      const auto [r, g, b, a] = mesh->mColors[0][i];
+      vertex.color = glm::vec4(r, g, b, a);
+    } else {
+      // Set default color to white to prevent texture sampling to yield black colors
+      vertex.color = App::Config::Renderer::COLOR_PLACEHOLDER;
+    }
+
     if (mesh->mNormals)
       vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
 
@@ -95,6 +107,17 @@ std::shared_ptr<Mesh> ModelLoader::processMesh(aiMesh *mesh, const aiScene *scen
 
 std::shared_ptr<Material> ModelLoader::loadMaterial(const aiMaterial *mat, const std::string &directory) {
   auto material = std::make_shared<Material>();
+
+  // TODO: find a better way to decide which is the proper shader for current material.
+  //       Using a default material for now (standard.vert, standard.frag)
+  material->setShader(
+      g_shaderCache.get(App::Config::Renderer::DEFAULT_VERTEX_SHADER, App::Config::Renderer::DEFAULT_FRAGMENT_SHADER));
+
+  // Pre-populate with safe defaults
+  material->setUniform(DIFFUSE_COLOR_UNIFORM_NAME, glm::vec4(1.0f));
+  material->setUniform(SPECULAR_COLOR_UNIFORM_NAME, glm::vec4(1.0f));
+  material->setUniform(SHININESS_UNIFORM_NAME, 32.0f);
+  material->setUniform(OPACITY_UNIFORM_NAME, 1.0f);
 
 #define loadColorUniform(aiMaterialKey, uniformName)                                                                   \
   if (aiColor4D color; mat->Get(aiMaterialKey, color) == AI_SUCCESS) {                                                 \
@@ -129,11 +152,11 @@ std::shared_ptr<Material> ModelLoader::loadMaterial(const aiMaterial *mat, const
     if (mat->GetTextureCount(type) > 0) {
       aiString texturePath;
       mat->GetTexture(type, 0, &texturePath);
-      std::string fullPath = directory + "/" + texturePath.C_Str();
+      const std::string fullPath = directory + "/" + texturePath.C_Str();
 
-      auto tex = std::make_shared<Texture2D>(fullPath);
-      tex->load(); // Preload from disk to GPU immediately
-      return tex;
+      std::shared_ptr<Texture2D> texture = g_textureCache.get(fullPath);
+      texture->load(); // Preload from disk to GPU immediately
+      return texture;
     }
     return nullptr;
   };
