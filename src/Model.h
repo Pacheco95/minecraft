@@ -19,5 +19,5 @@ private:
     std::shared_ptr<Material> material;
   };
 
-  std::vector<MeshGroup> meshGroups;
+  std::vector<MeshGroup> m_meshGroups;
 };

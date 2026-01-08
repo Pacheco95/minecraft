@@ -3,7 +3,7 @@
 #include <spdlog/spdlog.h>
 
 void Model::setup() {
-  for (const auto &[mesh, material] : meshGroups) {
+  for (const auto &[mesh, material] : m_meshGroups) {
     if (mesh) {
       mesh->setup();
     }
@@ -11,7 +11,7 @@ void Model::setup() {
 }
 
 void Model::render(const RenderContext &ctx) {
-  for (auto &[mesh, material] : meshGroups) {
+  for (auto &[mesh, material] : m_meshGroups) {
     if (!mesh || !material) {
       SPDLOG_WARN("Empty mesh or material");
       continue;
@@ -59,5 +59,5 @@ void Model::render(const RenderContext &ctx) {
 }
 
 void Model::addMeshGroup(const std::shared_ptr<Mesh> &mesh, const std::shared_ptr<Material> &material) {
-  meshGroups.push_back({mesh, material});
+  m_meshGroups.push_back({mesh, material});
 }

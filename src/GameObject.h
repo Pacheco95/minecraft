@@ -10,6 +10,6 @@ public:
   void render(const RenderContext &ctx) const;
 
 private:
-  Transform transform;
-  std::shared_ptr<Renderable> renderer = nullptr;
+  Transform m_transform;
+  std::shared_ptr<Renderable> m_renderer = nullptr;
 };

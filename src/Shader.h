@@ -19,8 +19,6 @@ constexpr const char *const shaderTypes[] = {"VERTEX", "FRAGMENT", "PROGRAM"};
 
 class Shader {
 public:
-  unsigned int ID;
-
   explicit Shader(const std::string &name);
   Shader(const std::string &vertexPath, const std::string &fragmentPath);
   Shader(const char *vertexName, const char *fragmentName);
@@ -28,7 +26,7 @@ public:
   ~Shader();
 
   void use() const {
-    glUseProgram(ID);
+    glUseProgram(m_id);
   }
 
   void set(const std::string &name, const bool value) {
@@ -84,13 +82,15 @@ public:
   }
 
 private:
-  std::string vertexPath;
-  std::string fragmentPath;
-  static void checkCompileErrors(GLuint shader, ShaderType type);
-  static uint compile(const std::string &code, ShaderType type);
+  unsigned int m_id;
+
+  std::string m_vertexPath;
+  std::string m_fragmentPath;
   std::unordered_map<std::string, GLint> m_uniformLocations{};
 
   GLint getUniformLocation(const std::string &name);
+  static void checkCompileErrors(GLuint shader, ShaderType type);
+  static uint compile(const std::string &code, ShaderType type);
 };
 
 } // namespace App

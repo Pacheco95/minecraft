@@ -4,30 +4,30 @@
 
 namespace App {
 
-GLuint FloorGrid::gridVAO = 0;
-GLuint FloorGrid::gridVBO = 0;
-std::shared_ptr<Shader> FloorGrid::gridShader = {};
+GLuint FloorGrid::s_gridVAO = 0;
+GLuint FloorGrid::s_gridVBO = 0;
+std::shared_ptr<Shader> FloorGrid::s_gridShader = {};
 
 FloorGrid::~FloorGrid() {
-  if (gridVAO) {
-    glDeleteVertexArrays(1, &gridVAO);
+  if (s_gridVAO) {
+    glDeleteVertexArrays(1, &s_gridVAO);
   };
 
-  if (gridVBO) {
-    glDeleteBuffers(1, &gridVBO);
+  if (s_gridVBO) {
+    glDeleteBuffers(1, &s_gridVBO);
   }
 
-  gridVAO = gridVBO = 0;
+  s_gridVAO = s_gridVBO = 0;
 }
 
 void FloorGrid::setup() {
-  gridShader = g_shaderCache.get("grid");
+  s_gridShader = g_shaderCache.get("grid");
 
-  if (!gridVAO) {
-    glGenVertexArrays(1, &gridVAO);
-    glGenBuffers(1, &gridVBO);
-    glBindVertexArray(gridVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
+  if (!s_gridVAO) {
+    glGenVertexArrays(1, &s_gridVAO);
+    glGenBuffers(1, &s_gridVBO);
+    glBindVertexArray(s_gridVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, s_gridVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
@@ -35,15 +35,15 @@ void FloorGrid::setup() {
 }
 
 void FloorGrid::render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) {
-  gridShader->use();
-  gridShader->set("view", viewMatrix);
-  gridShader->set("projection", projectionMatrix);
+  s_gridShader->use();
+  s_gridShader->set("view", viewMatrix);
+  s_gridShader->set("projection", projectionMatrix);
 
   // GRID RENDER STATES
   glDepthMask(GL_FALSE);
   glDisable(GL_CULL_FACE); // Disable culling to ensure full quad draws
 
-  glBindVertexArray(gridVAO);
+  glBindVertexArray(s_gridVAO);
   glDrawArrays(GL_TRIANGLES, 0, 6);
   glBindVertexArray(0);
 

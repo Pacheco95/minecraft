@@ -68,8 +68,8 @@ public:
   [[nodiscard]] bool isLoaded() const;
 
 private:
-  std::vector<Mesh> meshes;
-  std::string modelDirectory;
+  std::vector<Mesh> m_meshes;
+  std::string m_modelDirectory;
 
   void cleanup();
 

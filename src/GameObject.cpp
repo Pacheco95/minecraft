@@ -1,16 +1,16 @@
 #include "GameObject.h"
 
 void GameObject::render(const RenderContext &ctx) const {
-  if (!renderer) {
+  if (!m_renderer) {
     SPDLOG_WARN("No renderer");
   }
 
   const RenderContext objectCtx = {
-      .modelMatrix = transform.GetModelMatrix(),
+      .modelMatrix = m_transform.GetModelMatrix(),
       .viewMatrix = ctx.viewMatrix,
       .projectionMatrix = ctx.projectionMatrix,
       .cameraPosition = ctx.cameraPosition,
   };
 
-  renderer->render(objectCtx);
+  m_renderer->render(objectCtx);
 }

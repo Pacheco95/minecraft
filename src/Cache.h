@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <sstream>
 #include <string>
+#include <memory>
 
 constexpr auto sep = " ";
 

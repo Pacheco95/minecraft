@@ -34,7 +34,7 @@ Shader::Shader(const std::string &name) : Shader(SHADER_PATH + name + ".vert", S
 }
 
 Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath)
-    : vertexPath(vertexPath), fragmentPath(fragmentPath) {
+    : m_vertexPath(vertexPath), m_fragmentPath(fragmentPath) {
   const std::string vertexCode = loadShaderFile(vertexPath.c_str());
   const std::string fragmentCode = loadShaderFile(fragmentPath.c_str());
 
@@ -42,12 +42,12 @@ Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath)
   const uint fragment = compile(fragmentCode, ShaderType::FRAGMENT);
 
   // shader Program
-  ID = glCreateProgram();
-  glAttachShader(ID, vertex);
-  glAttachShader(ID, fragment);
-  glLinkProgram(ID);
+  m_id = glCreateProgram();
+  glAttachShader(m_id, vertex);
+  glAttachShader(m_id, fragment);
+  glLinkProgram(m_id);
 
-  checkCompileErrors(ID, ShaderType::PROGRAM);
+  checkCompileErrors(m_id, ShaderType::PROGRAM);
 
   // delete the shaders as they're linked into our program now and no longer necessary
   glDeleteShader(vertex);
@@ -59,7 +59,7 @@ Shader::Shader(const char *const vertexName, const char *const fragmentName)
 }
 
 Shader::~Shader() {
-  glDeleteProgram(ID);
+  glDeleteProgram(m_id);
 }
 
 void Shader::checkCompileErrors(const GLuint shader, const ShaderType type) {
@@ -99,11 +99,11 @@ GLint Shader::getUniformLocation(const std::string &name) {
     return locationPtr->second;
   }
 
-  const GLint location = glGetUniformLocation(ID, name.c_str());
+  const GLint location = glGetUniformLocation(m_id, name.c_str());
 
   if (Config::Core::DEBUG_MODE) {
     if (location == -1) {
-      if (vertexPath.contains("skeleton") && fragmentPath.contains("skeleton")) {
+      if (m_vertexPath.contains("skeleton") && m_fragmentPath.contains("skeleton")) {
         SPDLOG_WARN("Trying to set unknown uniform: {}", name);
       }
     }

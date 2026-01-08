@@ -94,7 +94,7 @@ void OldModel::load(const std::string &filePath) {
   cleanup();
 
   // Store the directory path for relative texture paths
-  modelDirectory = std::filesystem::path(filePath).parent_path().string();
+  m_modelDirectory = std::filesystem::path(filePath).parent_path().string();
 
   Assimp::Importer importer;
 
@@ -119,29 +119,29 @@ void OldModel::load(const std::string &filePath) {
 
   SPDLOG_INFO("Loading model: {} with {} meshes", filePath, scene->mNumMeshes);
   processNode(scene->mRootNode, scene);
-  SPDLOG_INFO("Successfully loaded model with {} meshes", meshes.size());
+  SPDLOG_INFO("Successfully loaded model with {} meshes", m_meshes.size());
 }
 
 void OldModel::setupAllBuffers() {
-  for (auto &mesh : meshes) {
+  for (auto &mesh : m_meshes) {
     mesh.setupBuffers();
   }
-  SPDLOG_INFO("Setup buffers for {} meshes", meshes.size());
+  SPDLOG_INFO("Setup buffers for {} meshes", m_meshes.size());
 }
 
 void OldModel::render() const {
-  for (const auto &mesh : meshes) {
+  for (const auto &mesh : m_meshes) {
     mesh.render();
   }
 }
 
 bool OldModel::isLoaded() const {
-  return !meshes.empty();
+  return !m_meshes.empty();
 }
 
 void OldModel::cleanup() {
   // Textures are cleared by Texture2D class destructor
-  meshes.clear();
+  m_meshes.clear();
 }
 
 void OldModel::processNode(const aiNode *node, const aiScene *scene) {
@@ -212,7 +212,7 @@ void OldModel::processMesh(aiMesh *aiMesh, const aiScene *scene) {
   aiMaterial *aiMat = scene->mMaterials[aiMesh->mMaterialIndex];
   mesh.material = processMaterial(aiMat);
 
-  meshes.emplace_back(mesh);
+  m_meshes.emplace_back(mesh);
 }
 
 Material OldModel::processMaterial(const aiMaterial *aiMaterial) const {
@@ -256,21 +256,21 @@ Material OldModel::processMaterial(const aiMaterial *aiMaterial) const {
   // Diffuse texture
   if (textureTypes.contains(aiTextureType_DIFFUSE)) {
     aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &texPath);
-    material.diffuseTexture = g_textureCache.get(modelDirectory + "/" + texPath.C_Str());
+    material.diffuseTexture = g_textureCache.get(m_modelDirectory + "/" + texPath.C_Str());
     material.diffuseTexture->load();
   }
 
   // Normal texture
   if (textureTypes.contains(aiTextureType_HEIGHT)) {
     aiMaterial->GetTexture(aiTextureType_HEIGHT, 0, &texPath);
-    material.normalTexture = g_textureCache.get(modelDirectory + "/" + texPath.C_Str());
+    material.normalTexture = g_textureCache.get(m_modelDirectory + "/" + texPath.C_Str());
     material.normalTexture->load();
   }
 
   // Specular texture
   if (textureTypes.contains(aiTextureType_SPECULAR)) {
     aiMaterial->GetTexture(aiTextureType_SPECULAR, 0, &texPath);
-    material.specularTexture = g_textureCache.get(modelDirectory + "/" + texPath.C_Str());
+    material.specularTexture = g_textureCache.get(m_modelDirectory + "/" + texPath.C_Str());
     material.specularTexture->load();
   }
 

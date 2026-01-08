@@ -8,16 +8,16 @@
   glVertexAttribPointer(name##AttrIndex, _size(name), glType, GL_FALSE, sizeof(Vertex), _offset(name))
 
 void Mesh::setup() {
-  glGenVertexArrays(1, &VAO);
-  glGenBuffers(1, &VBO);
-  glGenBuffers(1, &EBO);
+  glGenVertexArrays(1, &m_VAO);
+  glGenBuffers(1, &m_VBO);
+  glGenBuffers(1, &m_EBO);
 
-  glBindVertexArray(VAO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+  glBindVertexArray(m_VAO);
+  glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+  glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(Vertex), m_vertices.data(), GL_STATIC_DRAW);
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(unsigned int), m_indices.data(), GL_STATIC_DRAW);
 
   _bind(position, GL_FLOAT);
   _bind(color, GL_FLOAT);
@@ -30,8 +30,8 @@ void Mesh::setup() {
 }
 
 void Mesh::render(const GLuint renderMode) const {
-  glBindVertexArray(VAO);
-  glDrawElements(renderMode, static_cast<GLuint>(indices.size()), GL_UNSIGNED_INT, nullptr);
+  glBindVertexArray(m_VAO);
+  glDrawElements(renderMode, static_cast<GLuint>(m_indices.size()), GL_UNSIGNED_INT, nullptr);
   glBindVertexArray(0);
 }
 

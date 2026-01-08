@@ -28,8 +28,8 @@ public:
   };
 
 private:
-  static GLuint gridVAO, gridVBO;
-  static std::shared_ptr<Shader> gridShader;
+  static GLuint s_gridVAO, s_gridVBO;
+  static std::shared_ptr<Shader> s_gridShader;
 };
 
 } // namespace App

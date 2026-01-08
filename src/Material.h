@@ -49,51 +49,51 @@ constexpr auto TRANSPARENCY_FACTOR_UNIFORM_NAME = "uMaterial.transparencyFactor"
 class Material {
 public:
   std::shared_ptr<App::Shader> getShader() {
-    return shader;
+    return m_shader;
   }
 
   void bindTextures();
   void applyUniforms() const;
 
-  void setShader(std::shared_ptr<App::Shader> shader) {
-    this->shader = shader;
+  void setShader(const std::shared_ptr<App::Shader> &shader) {
+    m_shader = shader;
   }
 
   void setUniform(const std::string &name, const float value) {
-    floatUniforms[name] = value;
+    m_floatUniforms[name] = value;
   }
 
   void setIntUniform(const std::string &name, const int value) {
-    intUniforms[name] = value;
+    m_intUniforms[name] = value;
   }
 
   void setUniform(const std::string &name, const glm::vec3 &value) {
-    vec3Uniforms[name] = value;
+    m_vec3Uniforms[name] = value;
   }
 
   void setUniform(const std::string &name, const glm::vec4 &value) {
-    vec4Uniforms[name] = value;
+    m_vec4Uniforms[name] = value;
   }
 
   void setDiffuseTex(const std::shared_ptr<Texture2D> &diffuseTexture) {
-    diffuse = diffuseTexture;
+    m_diffuseTexture = diffuseTexture;
   }
 
   void setSpecularTex(const std::shared_ptr<Texture2D> &specularTexture) {
-    specular = specularTexture;
+    m_specularTexture = specularTexture;
   }
 
   void setNormalTex(const std::shared_ptr<Texture2D> &normalTexture) {
-    normal = normalTexture;
+    m_normalTexture = normalTexture;
   }
 
 private:
-  std::shared_ptr<App::Shader> shader;
-  std::shared_ptr<Texture2D> diffuse;
-  std::shared_ptr<Texture2D> specular;
-  std::shared_ptr<Texture2D> normal;
-  std::unordered_map<std::string, float> floatUniforms;
-  std::unordered_map<std::string, glm::vec3> vec3Uniforms;
-  std::unordered_map<std::string, glm::vec4> vec4Uniforms;
-  std::unordered_map<std::string, int> intUniforms;
+  std::shared_ptr<App::Shader> m_shader;
+  std::shared_ptr<Texture2D> m_diffuseTexture;
+  std::shared_ptr<Texture2D> m_specularTexture;
+  std::shared_ptr<Texture2D> m_normalTexture;
+  std::unordered_map<std::string, float> m_floatUniforms;
+  std::unordered_map<std::string, glm::vec3> m_vec3Uniforms;
+  std::unordered_map<std::string, glm::vec4> m_vec4Uniforms;
+  std::unordered_map<std::string, int> m_intUniforms;
 };

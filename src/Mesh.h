@@ -33,7 +33,7 @@ enum VertexAttributeIndex {
 class Mesh {
 public:
   Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices)
-      : vertices(std::move(vertices)), indices(std::move(indices)), VAO(0), VBO(0), EBO(0) {
+      : m_vertices(std::move(vertices)), m_indices(std::move(indices)), m_VAO(0), m_VBO(0), m_EBO(0) {
   }
 
   void setup();
@@ -41,7 +41,7 @@ public:
   void render(GLuint renderMode = GL_TRIANGLES) const;
 
 private:
-  std::vector<Vertex> vertices;
-  std::vector<unsigned int> indices;
-  unsigned int VAO, VBO, EBO; // OpenGL handles
+  std::vector<Vertex> m_vertices;
+  std::vector<unsigned int> m_indices;
+  unsigned int m_VAO, m_VBO, m_EBO; // OpenGL handles
 };

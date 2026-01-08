@@ -20,6 +20,6 @@ public:
 
   void processEvent(const SDL_Event *event);
 
-  const ImGuiIO &io() const;
+  [[nodiscard]] const ImGuiIO &io() const;
 };
 } // namespace App
