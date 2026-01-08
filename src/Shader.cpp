@@ -4,6 +4,8 @@
 #include <sstream>
 #include <iostream>
 
+#include "Config.h"
+
 constexpr auto SHADER_PATH = "resources/shaders/";
 
 namespace App {
@@ -98,6 +100,14 @@ GLint Shader::getUniformLocation(const std::string &name) {
   }
 
   const GLint location = glGetUniformLocation(ID, name.c_str());
+
+  if (Config::Core::DEBUG_MODE) {
+    if (location == -1) {
+      if (vertexPath.contains("skeleton") && fragmentPath.contains("skeleton")) {
+        SPDLOG_WARN("Trying to set unknown uniform: {}", name);
+      }
+    }
+  }
 
   m_uniformLocations.insert({name, location});
   return location;

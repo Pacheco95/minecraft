@@ -35,6 +35,10 @@ public:
     glUniform1i(getUniformLocation(name), static_cast<int>(value));
   }
 
+  void set(const std::string &name, const std::size_t value) {
+    glUniform1ui(getUniformLocation(name), value);
+  }
+
   void set(const std::string &name, const int value) {
     glUniform1i(getUniformLocation(name), value);
   }

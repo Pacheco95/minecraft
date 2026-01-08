@@ -144,7 +144,7 @@ RenderContext getDefaultRenderContext() {
       .viewMatrix = g_camera.getViewMatrix(),
       .projectionMatrix = getProjectionMatrix(),
       .cameraPosition = g_camera.getPosition(),
-      .light = g_light,
+      .lights = {g_light},
       .customShader =
           g_shaderCache.get(Config::Renderer::DEFAULT_VERTEX_SHADER, Config::Renderer::DEFAULT_FRAGMENT_SHADER),
   };
@@ -187,8 +187,8 @@ void renderAxis() {
 void Window::renderOpenGlData() {
   renderGrid();
   renderAxis();
-  render3DModel();
   renderLightIndicator();
+  render3DModel();
 }
 
 void Window::render() const {

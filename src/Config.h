@@ -12,6 +12,7 @@ namespace Core {
 constexpr int OPENGL_VERSION_MAJOR = 3;
 constexpr int OPENGL_VERSION_MINOR = 3;
 constexpr auto GLSL_VERSION = "#version 330";
+constexpr auto DEBUG_MODE = false;
 } // namespace Core
 
 namespace Renderer {

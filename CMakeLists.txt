@@ -161,3 +161,4 @@ set_target_properties(Minecraft PROPERTIES
     CXX_EXTENSIONS OFF
 )
 
+target_compile_features(Minecraft PRIVATE cxx_std_23)

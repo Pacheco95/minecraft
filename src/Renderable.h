@@ -10,7 +10,7 @@ struct RenderContext {
   glm::mat4 viewMatrix;
   glm::mat4 projectionMatrix;
   glm::vec3 cameraPosition;
-  Light light;
+  std::vector<Light> lights;
   GLuint renderMode = GL_TRIANGLES;
   std::optional<std::shared_ptr<App::Shader>> customShader = std::nullopt;
 };

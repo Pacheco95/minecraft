@@ -103,11 +103,11 @@ void Camera::handleKeyInput() {
   }
 
   if (keys[SDL_SCANCODE_SPACE]) {
-    m_position += glm::vec3(0.0, 1.0, 0.0) * frameSpeed;
+    m_position += m_up * frameSpeed;
   }
 
   if (keys[SDL_SCANCODE_LALT]) {
-    m_position -= glm::vec3(0.0, 1.0, 0.0) * frameSpeed;
+    m_position -= m_up * frameSpeed;
   }
 }
 
