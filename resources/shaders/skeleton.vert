@@ -10,7 +10,7 @@ layout(location = 4) in vec3 aTangent;
 layout(location = 5) in vec3 aBitangent;
 
 out VsOut {
-  vec3 fragPos;
+  vec3 fragWorldPos;
   vec4 color;
   vec2 texCoords;
   vec3 normal;
@@ -23,7 +23,7 @@ uniform mat4 uView;
 uniform mat4 uProjection;
 
 void main() {
-  vsOut.fragPos = vec3(uModel * vec4(aPosition, 1.0));
+  vsOut.fragWorldPos = vec3(uModel * vec4(aPosition, 1.0));
   vsOut.color = aColor;
   vsOut.texCoords = aTexCoords;
 

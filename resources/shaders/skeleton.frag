@@ -16,7 +16,7 @@ vec4 useUniforms();
 out vec4 FragColor;
 
 in VsOut {
-  vec3 fragPos;
+  vec3 fragWorldPos;
   vec4 color;
   vec2 texCoords;
   vec3 normal;
